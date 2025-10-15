@@ -101,8 +101,8 @@ module.exports = (env) => {
       }),
       new CopyPlugin({
         patterns: [
-          { from: './src/images/**/*', to: 'images/[name].[ext]' },
-          { from: './src/fonts/**/*', to: 'fonts/[name].[ext]' },
+          { from: './src/images/**/*', to: 'images/[name][ext]' },
+          { from: './src/fonts/**/*', to: 'fonts/[name][ext]' },
         ],
       }),
       new HandlebarsPlugin({
