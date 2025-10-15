@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modal</title>
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+    <link rel="stylesheet" href="styles/app.css" />
+  </head>
+  <body data-component="modal">
+    {{> hbs/header}}
+    <div class="container">
+      <h1>Modal Component</h1>
+      <p>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Necessitatibus
+        est officia odit cum, neque consequuntur. Temporibus, tenetur nulla nisi
+        sint, recusandae vitae exercitationem obcaecati ipsa officia at facilis,
+        ipsam rem.
+      </p>
+      <button id="open-modal-btn">Open Modal</button>
+
+      <div
+        class="dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="dialog-label"
+      >
+        <div class="dialoge-bg" aria-hidden="true"></div>
+        <div class="dialog-panel">
+          <button
+            aria-label="close modal"
+            id="first-focusable-elem"
+            class="close-modal-btn"
+          >
+            X
+          </button>
+          <div class="dialog-panel-body">
+            <h2 id="dialog-label">Modal</h2>
+            <p>
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem,
+              eaque?
+            </p>
+            <ul>
+              <li><a href="https://google.com">Google</a></li>
+              <li><a href="https://cnbc.com">CNBC</a></li>
+              <li><a href="https://netflix.com">Netflix</a></li>
+              <li><a href="https://amazon.com">Amazon</a></li>
+            </ul>
+            <button
+              aria-label="close modal"
+              id="last-focusable-elem"
+              class="close-modal-btn"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="scripts/app.js"></script>
+  </body>
+</html>

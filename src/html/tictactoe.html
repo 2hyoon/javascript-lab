@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tic Tac Toe</title>
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+    <link rel="stylesheet" href="styles/app.css" />
+  </head>
+  <body data-component="tictactoe">
+    {{> hbs/header}}
+    <div class="container">
+      <section class="ttt">
+        <div class="ttt-main">
+          <h1>Tic Tac Toe</h1>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatem
+            debitis nulla tempore repellendus suscipit velit?
+          </p>
+
+          <div id="game-status" class="ttt-status" aria-live="polite" aria-atomic="true"></div>
+          <div class="ttt-board">
+            <button
+              data-index="0"
+              aria-label="Board Square 1"
+              class="square"
+            ></button>
+            <button
+              data-index="1"
+              aria-label="Board Square 2"
+              class="square"
+            ></button>
+            <button
+              data-index="2"
+              aria-label="Board Square 3"
+              class="square"
+            ></button>
+            <button
+              data-index="3"
+              aria-label="Board Square 4"
+              class="square"
+            ></button>
+            <button
+              data-index="4"
+              aria-label="Board Square 5"
+              class="square"
+            ></button>
+            <button
+              data-index="5"
+              aria-label="Board Square 6"
+              class="square"
+            ></button>
+            <button
+              data-index="6"
+              aria-label="Board Square 7"
+              class="square"
+            ></button>
+            <button
+              data-index="7"
+              aria-label="Board Square 8"
+              class="square"
+            ></button>
+            <button
+              data-index="8"
+              aria-label="Board Square 9"
+              class="square"
+            ></button>
+          </div>
+          <button id="reset-button" class="ttt-reset-button">Reset Game</button>
+        </div>
+        <aside class="ttt-history">
+          <h2>Game history</h2>
+          <ol id="history-list" class="ttt-history"></ol>
+        </aside>
+      </section>
+    </div>
+    <script src="scripts/app.js"></script>
+  </body>
+</html>

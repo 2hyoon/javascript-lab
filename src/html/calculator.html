@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculator</title>
+    <link rel="icon" type="image/png" href="/images/favicon.png" />
+    <link rel="stylesheet" href="styles/app.css" />
+  </head>
+  <body data-component="calculator">
+    {{> hbs/header}}
+
+    <div class="container">
+      <section>
+        <h1>Basic Calculator</h1>
+        <div class="calculator-container">
+          <!-- Display -->
+          <div class="calculator-display">
+            <p id="display" role="status" aria-live="polite">0</p>
+          </div>
+
+          <!-- Buttons -->
+          <div class="calculator-buttons calculator-keys">
+            <button
+              data-action="clear"
+              aria-label="all clear"
+              class="bg-lightgray"
+            >
+              AC
+            </button>
+            <button
+              data-action="toggle-sign"
+              aria-label="toggle sign"
+              class="bg-lightgray"
+            >
+              ±
+            </button>
+            <button
+              data-action="percent"
+              aria-label="percent"
+              class="bg-lightgray"
+            >
+              %
+            </button>
+            <button
+              data-action="divide"
+              data-operator="÷"
+              aria-label="divide"
+              aria-pressed="false"
+              class="bg-orange"
+            >
+              ÷
+            </button>
+
+            <button>7</button>
+            <button>8</button>
+            <button>9</button>
+            <button
+              data-action="multiply"
+              data-operator="×"
+              aria-label="multiply"
+              aria-pressed="false"
+              class="bg-orange"
+            >
+              ×
+            </button>
+
+            <button>4</button>
+            <button>5</button>
+            <button>6</button>
+            <button
+              data-action="subtract"
+              data-operator="−"
+              aria-label="subtract"
+              aria-pressed="false"
+              class="bg-orange"
+            >
+              −
+            </button>
+
+            <button>1</button>
+            <button>2</button>
+            <button>3</button>
+            <button
+              data-action="add"
+              data-operator="+"
+              aria-label="add"
+              aria-pressed="false"
+              class="bg-orange"
+            >
+              +
+            </button>
+
+            <button class="double">0</button>
+            <button data-action="decimal" aria-label="decimal">.</button>
+            <button data-action="equals" aria-label="equals" class="bg-orange">
+              =
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+    <script src="scripts/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Subscription</title>
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+    <link rel="stylesheet" href="styles/app.css" />
+  </head>
+  <body data-component="form">
+    {{> hbs/header}}
+    <div class="container">
+      <section>
+        <h1 id="form-title">Create Your Account</h1>
+        <p>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio
+          recusandae earum saepe suscipit et sit.
+        </p>
+        <div id="alert-container"></div>
+        <form id="subscription-form" class="sform" novalidate aria-labelledby="form-title">
+          <div class="sform-container sform-input">
+            <label for="name">Full Name</label>
+            <input
+              type="text"
+              name="name"
+              id="name"
+              placeholder="John Doe"
+              required
+            />
+          </div>
+          <div class="sform-container sform-input">
+            <label for="email">Email Address</label>
+            <input
+              type="email"
+              name="email"
+              id="email"
+              placeholder="you@example.com"
+              required
+            />
+          </div>
+          <fieldset id="plan-options">
+            <legend>Select a Plan</legend>
+            <div>
+              <input
+                type="radio"
+                name="plan"
+                id="plan-free"
+                value="free"
+                checked
+              />
+              <label for="plan-free">Free</label>
+            </div>
+            <div>
+              <input type="radio" name="plan" id="plan-basic" value="basic" />
+              <label for="plan-basic">Basic</label>
+            </div>
+            <div>
+              <input
+                type="radio"
+                name="plan"
+                id="plan-premium"
+                value="premium"
+              />
+              <label for="plan-premium">Premium</label>
+            </div>
+          </fieldset>
+          <div class="sform-container">
+            <input type="checkbox" name="agreedToTerms" id="agreedToTerms" />
+            <label for="agreedToTerms"
+              >I agree to the Terms and Conditions</label
+            >
+          </div>
+          <button type="submit" id="submit-button">Submit</button>
+        </form>
+      </section>
+    </div>
+
+    <script src="scripts/app.js"></script>
+  </body>
+</html>

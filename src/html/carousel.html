@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Carousel</title>
+    <link rel="icon" type="image/png" href="/images/favicon.png" />
+    <link rel="stylesheet" href="styles/app.css" />
+  </head>
+  <body data-component="carousel">
+    {{> hbs/header}}
+    <div class="container">
+      <section>
+        <h1 id="carousel-title">Random Image Carousel</h1>
+        <p>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto
+          repellat veritatis totam! Expedita, sint doloremque!
+        </p>
+
+        <div
+          id="carousel-container"
+          class="crs"
+          role="region"
+          aria-roledescription="carousel"
+          aria-labelledby="carousel-title"
+        >
+          <p class="visually-hidden">
+            This is a carousel with images. Use the
+            previous and next buttons to navigate.
+          </p>
+
+          <!-- Slides will be rendered here -->
+          <div id="slides-container" class="crs-slides">
+            <!-- JS will inject slides here -->
+          </div>
+
+          <!-- slide content  aria-live="polite" aria-atomic="true" -->
+
+          <!-- Navigation Arrow - Previous -->
+          <button
+            id="prev-btn"
+            class="crs-prev-btn"
+            aria-label="Previous slide"
+            aria-controls="slides-container"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+
+          <!-- Navigation Arrow - Next -->
+          <button
+            id="next-btn"
+            class="crs-next-btn"
+            aria-label="Next slide"
+            aria-controls="slides-container"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+
+          <!-- Dot Indicators -->
+          <div id="dots-container" class="crs-dots">
+            <!-- JS will inject dots here -->
+          </div>
+        </div>
+      </section>
+    </div>
+    <script src="scripts/app.js"></script>
+  </body>
+</html>

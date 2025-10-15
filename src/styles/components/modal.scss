@@ -1,0 +1,87 @@
+[data-component=modal] {
+  color: rgb(36, 68, 108);
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  a {
+    color: rgb(36, 68, 108);
+  }
+
+  button {
+    background-color: rgb(45, 90, 144);
+    border: 0;
+    color: #eee;
+    box-sizing: border-box;
+    padding: 0.7rem 1.5rem;
+    border-radius: 5px;
+    transition: background-color 0.2s ease-out;
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba(38, 76, 122, 1);
+    }
+  }
+}
+
+.dialoge-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+  width: 100dvw;
+  height: 100dvh;
+  background-color: rgba(20, 20, 20, 0.8);
+  z-index: 1001;
+}
+
+.dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+  width: 100dvw;
+  height: 100dvh;
+  z-index: 1000;
+  display: none;
+  justify-content: center;
+  align-items: center;
+
+  &-panel {
+    position: relative;
+    background-color: #ddd;
+    box-sizing: border-box;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    width: 90%;
+    max-width: 800px;
+    z-index: 1002;
+  }
+
+  &-panel-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    ul {
+      margin: 1.5rem 0 2.5rem 0;
+      list-style-type: none;
+    }
+
+    li {
+      margin: 1rem;
+      display: inline-block;
+    }
+  }
+
+  #first-focusable-elem {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+  }
+
+  &.visible {
+    display: flex;
+  }
+}

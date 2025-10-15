@@ -1,0 +1,62 @@
+{
+	"name": "webpack-starter",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"dev": "NODE_ENV=development webpack --watch --config ./webpack.config.js",
+		"prod": "NODE_ENV=production webpack --config webpack.config.js",
+		"lint:js": "eslint \"src/scripts/**/*.js\" \"*.js\"",
+		"lint:sass": "stylelint \"src/styles/**/*.{scss,sass}\"",
+		"lint": "npm run lint:js && npm run lint:sass",
+		"prettier:check": "prettier --check \"src/{html,scripts,styles}/**/*.{html,scss,js,json}\" \"*.{js,json}\"",
+		"prettier:write": "prettier --write \"src/{html,scripts,styles}/**/*.{html,scss,js,json}\" \"*.{js,json}\""
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/2hyoon/webpack-starter.git"
+	},
+	"keywords": [
+		"webpack",
+		"vanila",
+		"javascript",
+		"scss"
+	],
+	"author": "Hailey Yoon",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/2hyoon/webpack-starter/issues"
+	},
+	"homepage": "https://github.com/2hyoon/webpack-starter#readme",
+	"devDependencies": {
+		"@babel/core": "^7.26.10",
+		"@babel/preset-env": "^7.26.9",
+		"autoprefixer": "^10.4.21",
+		"babel-loader": "^10.0.0",
+		"browser-sync": "^3.0.3",
+		"browser-sync-webpack-plugin": "^2.3.0",
+		"clean-webpack-plugin": "^4.0.0",
+		"copy-webpack-plugin": "^13.0.0",
+		"cross-env": "^7.0.3",
+		"css-loader": "^7.1.2",
+		"eslint": "^8.57.1",
+		"eslint-config-airbnb-base": "^15.0.0",
+		"eslint-config-prettier": "^10.1.1",
+		"eslint-plugin-import": "^2.31.0",
+		"handlebars-webpack-plugin": "^2.2.1",
+		"install": "^0.13.0",
+		"mini-css-extract-plugin": "^2.9.2",
+		"npm": "^11.2.0",
+		"postcss-loader": "^8.1.1",
+		"prettier": "^3.5.3",
+		"sass": "^1.85.1",
+		"sass-loader": "^16.0.5",
+		"style-loader": "^4.0.0",
+		"stylelint": "^16.15.0",
+		"stylelint-config-sass-guidelines": "^12.1.0",
+		"stylelint-config-standard": "^37.0.0",
+		"webpack": "^5.98.0",
+		"webpack-cli": "^6.0.1",
+		"webpack-dev-server": "^5.2.0"
+	}
+}

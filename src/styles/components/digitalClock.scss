@@ -1,0 +1,116 @@
+body[data-component=digital-clock] {
+  h1 {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    letter-spacing: 0.5px;
+  }
+}
+
+.dc-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.digital-clock {
+  --dc-margin: 8px;
+  --dc-height: 110px;
+  --dc-width: 60px;
+  --dc-thickness: 8px;
+  --dc-color: rgb(201, 55, 189);
+}
+
+.digital-clock {
+  background-color: black;
+  display: flex;
+  justify-content: center;
+  column-gap: 1rem;
+  padding: 1rem;
+  justify-self: center;
+}
+
+.digit {
+  position: relative;
+  width: 60px;
+  height: 110px;
+}
+
+.digit-bar {
+  position: absolute;
+  background-color: var(--dc-color);
+}
+
+.digit-bar-a {
+  width: calc(100% - var(--dc-margin) * 2);
+  height: var(--dc-thickness);
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.digit-bar-b {
+  width: var(--dc-thickness);
+  height: calc(var(--dc-height)/2 - var(--dc-margin) * 1.5);
+  top: var(--dc-margin);
+  right: 0;
+}
+
+.digit-bar-c {
+  width: var(--dc-thickness);
+  height: calc(var(--dc-height)/2 - var(--dc-margin) * 1.5);
+  top: calc(var(--dc-height)/2 + var(--dc-margin) * 0.5);
+  right: 0;
+}
+
+.digit-bar-d {
+  width: calc(100% - var(--dc-margin) * 2);
+  height: var(--dc-thickness);
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.digit-bar-e {
+  width: var(--dc-thickness);
+  height: calc(var(--dc-height)/2 - var(--dc-margin) * 1.5);
+  top: calc(var(--dc-height)/2 + var(--dc-margin) * 0.5);
+  left: 0;
+}
+
+.digit-bar-f {
+  width: var(--dc-thickness);
+  height: calc(var(--dc-height)/2 - var(--dc-margin) * 1.5);
+  top: var(--dc-margin);
+  left: 0;
+}
+
+.digit-bar-g {
+  width: calc(100% - var(--dc-margin) * 2);
+  height: var(--dc-thickness);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.opacity-20 {
+  opacity: 0.2;
+}
+
+.opacity-off {
+  opacity: 1;
+}
+
+.dot-container {
+  display: flex;
+  flex-direction: column;
+  row-gap: 1rem;
+  justify-content: center;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 100%;
+  background-color: var(--dc-color);
+}

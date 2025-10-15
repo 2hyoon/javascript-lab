@@ -1,0 +1,133 @@
+[data-component="todo-list"] .container {
+  display: flex;
+  justify-content: center;
+
+  h1 {
+    color: #eee;
+  }
+
+  h2,
+  p {
+    color: #fff;
+    font-size: .9rem;
+    font-weight: 400;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+.todo {
+  background-color: #222;
+  box-sizing: border-box;
+  padding: 1rem;
+  max-width: 600px;
+  width: 100%;
+}
+
+.todo-form {
+  background-color: #444;
+  padding: 1rem;
+  border-radius: 6px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+#todo-input {
+  padding: .75rem 1rem;
+  width: calc(100% - 150px);
+  border: 0;
+  border-radius: 3px;
+}
+
+.todo-add-btn {
+  border: 0;
+  background-color: #2160a0;
+  color: #fff;
+  border-radius: 3px;
+  padding: .75rem 1rem;
+  width: 100px;
+
+  &:hover {
+    background-color: #184a7b;
+  }
+}
+
+.todo-all {
+  list-style-type: none;
+  background-color: #444;
+  padding: 2rem 1rem;
+  border-radius: 3px;
+  margin-bottom: 1rem;
+
+  p {
+    text-align: center;
+    margin-top: 1rem;
+  }
+
+  p.off {
+    display: none;
+  }
+}
+
+.todo-list {
+  padding: 0;
+  margin: 1rem 0 0;
+  list-style-type: none;
+  box-sizing: border-box;
+}
+
+.todo-list li {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.todo-list input[type="text"] {
+  flex-grow: 1;
+  box-sizing: border-box;
+  padding: .7rem 1rem .7rem .5rem;
+  border-radius: 3px;
+  border: 2px solid #444;
+  outline: none;
+  background-color: #444;
+  color: #fff;
+
+  &:focus-visible,
+  &:focus {
+    border: 2px solid #3c86f5;
+    // box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
+  }
+}
+
+.todo-list button {
+  padding: .7rem 1rem;
+  border-radius: 3px;
+  border: 0;
+  background-color: #2160a0;
+  color: #fff;
+
+  &:hover {
+    background-color: #184a7b;
+  }
+}
+
+.todo-list input[type="checkbox"] {
+  width: 1.5rem;
+  height: 1.5rem;
+  background-color: #184a7b;
+  color: #fff;
+}
+
+.todo-completed {
+  list-style-type: none;
+  background-color: #444;
+  padding: 2rem 1rem;
+  border-radius: 3px;
+}
+
+#todo-completed-list.todo-list input[type="text"] {
+  color: #999;
+}

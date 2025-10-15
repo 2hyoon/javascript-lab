@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Accordion</title>
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+    <link rel="stylesheet" href="styles/app.css" />
+  </head>
+  <body data-component="accordion">
+    {{> hbs/header}}
+    <div class="container">
+      <section class="accordion-container">
+        <h1>Accordion</h1>
+        <div class="accordion">
+          <div class="accordion-item">
+            <button
+              id="accordion-button-1"
+              aria-expanded="false"
+              aria-controls="accordion-content-1"
+            >
+              <span class="accordion-title"
+                >What is an accordion component?</span
+              >
+              <span class="icon" aria-hidden="true"></span>
+            </button>
+            <div
+              class="accordion-content"
+              id="accordion-content-1"
+              role="region"
+              aria-labelledby="accordion-button-1"
+            >
+              <p>
+                An accordion is a user interface element that allows users to
+                show and hide sections of related content. It's a vertically
+                stacked list of items, where each item can be "expanded" or
+                "collapsed" to reveal the content associated with it.
+              </p>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <button
+              id="accordion-button-2"
+              aria-expanded="false"
+              aria-controls="accordion-content-2"
+            >
+              <span class="accordion-title">Why use accordions?</span>
+              <span class="icon" aria-hidden="true"></span>
+            </button>
+            <div
+              class="accordion-content"
+              id="accordion-content-2"
+              role="region"
+              aria-labelledby="accordion-button-2"
+            >
+              <p>
+                Accordions are useful for progressively disclosing information
+                to users, reducing clutter on the page. They are particularly
+                effective for FAQs, product features, or any content that can be
+                broken down into distinct sections, helping users focus on the
+                information most relevant to them.
+              </p>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <button
+              id="accordion-button-3"
+              aria-expanded="false"
+              aria-controls="accordion-content-3"
+            >
+              <span class="accordion-title">Are they accessible?</span>
+              <span class="icon" aria-hidden="true"></span>
+            </button>
+            <div
+              class="accordion-content"
+              id="accordion-content-3"
+              role="region"
+              aria-labelledby="accordion-button-3"
+            >
+              <p>
+                Yes, when implemented correctly with ARIA attributes. Key
+                attributes include <code>aria-expanded</code> on the button to
+                indicate state, <code>aria-controls</code> to link the button to
+                its content panel, and appropriate roles like
+                <code>region</code> and <code>aria-labelledby</code> on the
+                content panel for screen reader users.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <script src="scripts/app.js"></script>
+  </body>
+</html>

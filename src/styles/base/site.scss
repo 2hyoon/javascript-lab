@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+  --main-highlight-color: rgb(25, 64, 239);
+}
+
+
+body {
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  background-color: rgb(238, 238, 238);
+}
+
+.container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 5rem 1.5rem 1.5rem;
+  box-sizing: border-box;
+}
+
+header a {
+  text-decoration-line: none;
+  width: 60px;
+  height: 60px;
+  background-color: rgb(251, 251, 72);
+  display: flex;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  transition: background-color 0.2s ease-out;
+
+  svg {
+    width: 45px;
+  }
+
+  .infinity-path {
+    fill: rgb(0, 0, 0);
+    transition: fill 0.2s ease-out;
+  }
+
+  &:hover {
+    background-color: var(--main-highlight-color);
+
+    .infinity-path {
+      fill: rgb(42, 252, 66);
+    }
+  }
+}
+
+.menus {
+  margin: 5rem 0 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+.menus li {
+  display: inline-block;
+  margin: 1rem;
+}
+
+.menus a {
+  color: #000;
+  text-decoration-line: underline;
+  text-underline-offset: 4px;
+  font-size: 0.9rem;
+
+  &:hover {
+    color: var(--main-highlight-color);
+  }
+}
+
+a {
+  color: #000;
+  text-decoration-line: underline;
+  text-underline-offset: 4px;
+
+  &:hover {
+    color: var(--main-highlight-color);
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

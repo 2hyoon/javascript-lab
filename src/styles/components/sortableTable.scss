@@ -1,0 +1,49 @@
+body[data-component="sortable-table"] {
+  background-color: #1d2531;
+  color: #fff;
+}
+
+.stable {
+  width: 100%;
+}
+
+#sortable-table {
+  background-color: rgba(31, 41, 55, 1);
+  border-radius: 6px;
+  border: 1px solid rgba(55, 65, 81, 1);
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  min-width: 500px;
+  border-collapse: collapse;
+}
+
+td,
+th {
+  padding: 1.3rem;
+}
+
+th {
+  text-transform: uppercase;
+  text-align: left;
+  letter-spacing: 1px;
+  color: #d5d5d5;
+  font-size: .8rem;
+  cursor: pointer;
+  background-color: rgba(55, 65, 81, 1);
+
+  &:hover {
+    background-color: rgba(55, 65, 81, .6);
+  }
+}
+
+td {
+  color: #efefef;
+  font-size: .9rem;
+}
+
+tbody tr {
+  border-bottom: 1px solid rgba(55, 65, 81, 1);
+}

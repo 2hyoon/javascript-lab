@@ -1,0 +1,107 @@
+.accordion-container {
+  --primary-color: #f7f7f7;
+  --secondary-color: #ffffff;
+  --accent-color: #007bff;
+  --text-color: #333;
+  --border-color: #e0e0e0;
+  --shadow-color: rgba(0, 0, 0, 0.08);
+}
+
+.accordion-container {
+  width: 100%;
+
+  h1 {
+    text-align: center;
+    color: var(--text-color);
+    margin-bottom: 2rem;
+    font-weight: 600;
+  }
+}
+
+.accordion {
+  background-color: var(--secondary-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px var(--shadow-color);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.accordion-item {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.accordion-item:last-child {
+  border-bottom: none;
+}
+
+.accordion-item button {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 1.25rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  text-align: left;
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.accordion-item button:hover,
+.accordion-item button:focus {
+  background-color: #f1f1f1;
+  outline: none;
+}
+
+.accordion-item button[aria-expanded="true"] {
+  background-color: #f1f1f1;
+}
+
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0);
+  // transition: max-height 0.3s ease-out;
+  background-color: var(--secondary-color);
+}
+
+.accordion-content p {
+  padding: 1.25rem;
+  margin: 0;
+  line-height: 1.6;
+  color: #555;
+}
+
+.icon {
+  position: relative;
+  width: 1.2em;
+  height: 1.2em;
+  transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0);
+  flex-shrink: 0;
+  margin-left: 1rem;
+}
+
+.icon::before,
+.icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1em;
+  height: 2px;
+  background-color: var(--text-color);
+  transform: translate(-50%, -50%);
+  transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0);
+}
+
+.icon::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.accordion-item button[aria-expanded='true'] .icon {
+  transform: rotate(45deg);
+}

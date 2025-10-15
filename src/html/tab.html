@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tab</title>
+    <link rel="icon" type="image/png" href="/images/favicon.png" />
+    <link rel="stylesheet" href="styles/app.css" />
+  </head>
+  <body data-component="tab">
+    {{> hbs/header}}
+    <div class="container">
+      <section>
+        <h1>Tab Component</h1>
+        <p>
+          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Earum ad
+          quas blanditiis ipsum quae odio.
+        </p>
+        <div class="tab">
+          <nav aria-label="Tabs" role="tablist" aria-labelledby="tab-label">
+            <button
+              id="tab-1"
+              role="tab"
+              aria-selected="true"
+              aria-controls="panel-1"
+            >
+              Ipsum
+            </button>
+            <button
+              id="tab-2"
+              role="tab"
+              aria-selected="false"
+              aria-controls="panel-2"
+            >
+              consectetur
+            </button>
+            <button
+              id="tab-3"
+              role="tab"
+              aria-selected="false"
+              aria-controls="panel-3"
+            >
+              Earum
+            </button>
+          </nav>
+          <div class="tab-panels">
+            <div
+              id="panel-1"
+              role="tabpanel"
+              tabindex="0"
+              aria-labelledby="tab-1"
+              class="current"
+            >
+              <h2>Ipsum</h2>
+              <p>
+                1 Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab
+                nulla sed iusto mollitia repellendus quasi veritatis provident
+                facilis perspiciatis labore.
+              </p>
+            </div>
+            <div
+              id="panel-2"
+              role="tabpanel"
+              tabindex="0"
+              aria-labelledby="tab-2"
+            >
+              <h2>consectetur</h2>
+              <p>
+                2 Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab
+                nulla sed iusto mollitia repellendus quasi veritatis provident
+                facilis perspiciatis labore.
+              </p>
+            </div>
+            <div
+              id="panel-3"
+              role="tabpanel"
+              tabindex="0"
+              aria-labelledby="tab-3"
+            >
+              <h2>Earum</h2>
+              <p>
+                3 Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab
+                nulla sed iusto mollitia repellendus quasi veritatis provident
+                facilis perspiciatis labore.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <script src="scripts/app.js"></script>
+  </body>
+</html>

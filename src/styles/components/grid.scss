@@ -1,0 +1,69 @@
+body {
+  background-color: #eee;
+}
+
+.grid-container {
+  width: 100%;
+  background: #ddd;
+  padding: 3rem 1rem;
+  box-sizing: border-box;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 3fr 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "header header"
+    "main sidebar"
+    "footer footer";
+}
+
+.header {
+  grid-area: header;
+  background-color: rgb(186, 186, 185);
+}
+
+.main {
+  grid-area: main;
+  background-color: #fff;
+}
+
+.sidebar {
+  grid-area: sidebar;
+  background-color: bisque;
+}
+
+.footer {
+  grid-area: footer;
+  background-color: rgb(116, 116, 115);
+}
+
+@media (max-width: 768px) {
+  .grid-container {
+    /* 열 구조를 1개로 변경 */
+    grid-template-columns: 1fr;
+    /* 행 구조도 다시 정의할 수 있습니다. */
+    grid-template-rows: auto;
+    /* 레이아웃을 세로로 쌓이는 구조로 재정의 */
+    grid-template-areas:
+      "header"
+      "main"
+      "sidebar"
+      "footer";
+  }
+}
+
+.grid-container-2 {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  box-sizing: border-box;
+  padding: 50px;
+}
+
+.grid-item {
+  border-radius: 5px;
+  background-color: rgb(130, 185, 220);
+  box-sizing: border-box;
+  padding: 1rem;
+}

@@ -1,0 +1,27 @@
+.flex-container {
+  width: 100%;
+  background: #ddd;
+  padding: 3rem 1rem;
+  box-sizing: border-box;
+  display: flex;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.flex-item {
+  background-color: #eeff00;
+  border-radius: 5px;
+  padding: 10px;
+  box-sizing: border-box;
+  flex: 1;
+  // flex-grow: 0;
+  // flex-shrink: 1;
+  // flex-basis: 0;
+  // width: 50px;
+  // min-width: 50px;
+}
+
+.flex-item.extra {
+  background-color: skyblue;
+  order: 0;
+}

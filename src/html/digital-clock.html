@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>7-Segment Digital Clock</title>
+    <link rel="icon" type="image/png" href="/images/favicon.png" />
+    <link rel="stylesheet" href="styles/app.css" />
+  </head>
+  <body data-component="digital-clock">
+    {{> hbs/header}}
+    <div class="container">
+      <section class="dc-container">
+        <h1>7-Segment Digital Clock</h1>
+        <div id="time-element" aria-label="current time" aria-live="off">
+          <div
+            id="digital-clock-container"
+            class="digital-clock"
+          >
+            <!-- <div class="digit">
+          <div class="digit-bar digit-bar-a"></div>
+          <div class="digit-bar digit-bar-b"></div>
+          <div class="digit-bar digit-bar-c"></div>
+          <div class="digit-bar digit-bar-d"></div>
+          <div class="digit-bar digit-bar-e"></div>
+          <div class="digit-bar digit-bar-f"></div>
+          <div class="digit-bar digit-bar-g"></div>
+        </div> -->
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script src="scripts/app.js"></script>
+  </body>
+</html>
