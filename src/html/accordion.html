@@ -11,20 +11,22 @@
     {{> hbs/header}}
     <div class="container">
       <section class="accordion-container">
-        <h1>Accordion</h1>
-        <div class="accordion">
+        <h1 id="accordion-title">Accordion</h1>
+        <div class="accordion" aria-labelledby="accordion-title">
           <div class="accordion-item">
-            <button
-              type="button"
-              id="accordion-button-1"
-              aria-expanded="true"
-              aria-controls="accordion-content-1"
-            >
-              <span class="accordion-title"
-                >What is an accordion component?</span
+            <h2>
+              <button
+                type="button"
+                id="accordion-button-1"
+                aria-expanded="true"
+                aria-controls="accordion-content-1"
               >
-              <span class="icon" aria-hidden="true"></span>
-            </button>
+                <span class="accordion-title"
+                  >What is an accordion component?</span
+                >
+                <span class="icon" aria-hidden="true"></span>
+              </button>
+            </h2>
             <div
               class="accordion-content"
               id="accordion-content-1"
@@ -41,15 +43,17 @@
             </div>
           </div>
           <div class="accordion-item">
-            <button
-              type="button"
-              id="accordion-button-2"
-              aria-expanded="true"
-              aria-controls="accordion-content-2"
-            >
-              <span class="accordion-title">Why use accordions?</span>
-              <span class="icon" aria-hidden="true"></span>
-            </button>
+            <h2>
+              <button
+                type="button"
+                id="accordion-button-2"
+                aria-expanded="true"
+                aria-controls="accordion-content-2"
+              >
+                <span class="accordion-title">Why use accordions?</span>
+                <span class="icon" aria-hidden="true"></span>
+              </button>
+            </h2>
             <div
               class="accordion-content"
               id="accordion-content-2"
@@ -67,15 +71,17 @@
             </div>
           </div>
           <div class="accordion-item">
-            <button
-              type="button"
-              id="accordion-button-3"
-              aria-expanded="true"
-              aria-controls="accordion-content-3"
-            >
-              <span class="accordion-title">Are they accessible?</span>
-              <span class="icon" aria-hidden="true"></span>
-            </button>
+            <h2>
+              <button
+                type="button"
+                id="accordion-button-3"
+                aria-expanded="true"
+                aria-controls="accordion-content-3"
+              >
+                <span class="accordion-title">Are they accessible?</span>
+                <span class="icon" aria-hidden="true"></span>
+              </button>
+            </h2>
             <div
               class="accordion-content"
               id="accordion-content-3"

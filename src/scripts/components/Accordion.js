@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const accordionEl = accordion;
     const buttons = [
       ...accordionEl.querySelectorAll(
-        '.accordion-item > button[aria-controls]'
+        '.accordion-item h2 > button[aria-controls]'
       ),
     ];
     if (!buttons.length) return;
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     accordionEl.addEventListener('click', (event) => {
       const button = event.target.closest(
-        '.accordion-item > button[aria-controls]'
+        '.accordion-item h2 > button[aria-controls]'
       );
       if (!button || !accordionEl.contains(button)) return;
 

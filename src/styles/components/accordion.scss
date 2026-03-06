@@ -29,6 +29,10 @@
   border-bottom: none;
 }
 
+.accordion-item > h2 {
+  margin: 0;
+}
+
 .accordion-item button {
   position: relative;
   display: flex;
