@@ -1,42 +1,67 @@
 document.addEventListener('DOMContentLoaded', () => {
-  if(!document.querySelector('[data-component="accordion"]')) return;
+  if (!document.querySelector('[data-component="accordion"]')) return;
 
-  const accordionButtons = document.querySelectorAll('.accordion-item button');
+  function getPanel(button) {
+    const contentId = button.getAttribute('aria-controls');
+    return contentId ? document.getElementById(contentId) : null;
+  }
 
-  accordionButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-      // close
-      accordionButtons.forEach((otherButton) => {
-        if (otherButton !== button) {
-          otherButton.setAttribute('aria-expanded', 'false');
-          const contentId = otherButton.getAttribute('aria-controls');
-          if (contentId) {
-            const otherContent = document.getElementById(contentId);
-            if (otherContent) {
-              otherContent.style.maxHeight = null;
-            }
-          }
-        }
+  function setExpandedState(button, panel, expanded) {
+    const buttonEl = button;
+    const panelEl = panel;
+
+    buttonEl.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    panelEl.setAttribute('aria-hidden', expanded ? 'false' : 'true');
+    panelEl.style.maxHeight = expanded ? `${panelEl.scrollHeight}px` : '0px';
+  }
+
+  const accordions = document.querySelectorAll('.accordion');
+  if (!accordions.length) return;
+
+  accordions.forEach((accordion) => {
+    const accordionEl = accordion;
+    const buttons = [
+      ...accordionEl.querySelectorAll(
+        '.accordion-item > button[aria-controls]'
+      ),
+    ];
+    if (!buttons.length) return;
+
+    accordionEl.dataset.enhanced = 'true';
+
+    const expandedButtons = buttons.filter(
+      (button) => button.getAttribute('aria-expanded') === 'true'
+    );
+    const defaultOpenButton =
+      expandedButtons.length > 0 ? expandedButtons[0] : null;
+
+    buttons.forEach((button) => {
+      const panel = getPanel(button);
+      if (!panel) return;
+
+      const shouldBeExpanded = button === defaultOpenButton;
+      setExpandedState(button, panel, shouldBeExpanded);
+    });
+
+    accordionEl.addEventListener('click', (event) => {
+      const button = event.target.closest(
+        '.accordion-item > button[aria-controls]'
+      );
+      if (!button || !accordionEl.contains(button)) return;
+
+      const panel = getPanel(button);
+      if (!panel) return;
+
+      const isExpanded = button.getAttribute('aria-expanded') === 'true';
+
+      buttons.forEach((otherButton) => {
+        if (otherButton === button) return;
+        const otherPanel = getPanel(otherButton);
+        if (!otherPanel) return;
+        setExpandedState(otherButton, otherPanel, false);
       });
 
-      // toggle clicked item
-      const isExpanded = button.getAttribute('aria-expanded') === 'true';
-      const content = document.getElementById(
-        button.getAttribute('aria-controls')
-      );
-
-      if (content) {
-        if (isExpanded) {
-          // Collapse the content
-          button.setAttribute('aria-expanded', 'false');
-          content.style.maxHeight = null;
-        } else {
-          // Expand the content
-          button.setAttribute('aria-expanded', 'true');
-          // Set max-height to the content's scroll height to trigger the transition
-          content.style.maxHeight = `${content.scrollHeight}px`;
-        }
-      }
+      setExpandedState(button, panel, !isExpanded);
     });
   });
 });

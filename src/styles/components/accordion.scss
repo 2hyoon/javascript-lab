@@ -1,13 +1,8 @@
 .accordion-container {
-  --primary-color: #f7f7f7;
   --secondary-color: #ffffff;
-  --accent-color: #007bff;
   --text-color: #333;
   --border-color: #e0e0e0;
   --shadow-color: rgba(0, 0, 0, 0.08);
-}
-
-.accordion-container {
   width: 100%;
 
   h1 {
@@ -54,7 +49,6 @@
 .accordion-item button:hover,
 .accordion-item button:focus {
   background-color: #f1f1f1;
-  outline: none;
 }
 
 .accordion-item button[aria-expanded="true"] {
@@ -62,11 +56,13 @@
 }
 
 .accordion-content {
+  background-color: var(--secondary-color);
+}
+
+.accordion[data-enhanced='true'] .accordion-content {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0);
-  // transition: max-height 0.3s ease-out;
-  background-color: var(--secondary-color);
+  transition: max-height 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .accordion-content p {
@@ -95,7 +91,7 @@
   height: 2px;
   background-color: var(--text-color);
   transform: translate(-50%, -50%);
-  transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0);
+  transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .icon::after {
@@ -104,4 +100,19 @@
 
 .accordion-item button[aria-expanded='true'] .icon {
   transform: rotate(45deg);
+}
+
+.accordion-item button:focus-visible {
+  outline: 3px solid #4d90fe;
+  outline-offset: -3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .accordion[data-enhanced='true'] .accordion-content,
+  .icon,
+  .icon::before,
+  .icon::after {
+    transition: none;
+  }
 }
