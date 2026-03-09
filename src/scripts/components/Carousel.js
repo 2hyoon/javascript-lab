@@ -47,14 +47,18 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateUI() {
     slidesContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
 
+    // Hide non-active slides from assistive technologies.
+    slidesContainer.querySelectorAll('.crs-slide').forEach((slide, index) => {
+      const isCurrentSlide = index === currentIndex;
+      slide.setAttribute('aria-hidden', String(!isCurrentSlide));
+    });
+
     // dots
-    document.querySelectorAll('.dot').forEach((dot, index) => {
+    dotsContainer.querySelectorAll('.dot').forEach((dot, index) => {
       if (index === currentIndex) {
-        dot.classList.add('current');
-        dot.setAttribute('aria-selected', true);
+        dot.setAttribute('aria-current', 'true');
       } else {
-        dot.classList.remove('current');
-        dot.setAttribute('aria-selected', false);
+        dot.removeAttribute('aria-current');
       }
     });
   }
@@ -93,12 +97,21 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderUI() {
-    if (!carouselContainer || !slidesData || slidesData.length === 0) {
-      if (carouselContainer)
-        carouselContainer.insertAdjacentHTML(
-          'afterbegin',
-          '<p">No slides to display.</p>'
-        );
+    if (
+      !carouselContainer ||
+      !slidesContainer ||
+      !prevButton ||
+      !nextButton ||
+      !dotsContainer
+    ) {
+      return;
+    }
+
+    if (!slidesData || slidesData.length === 0) {
+      carouselContainer.insertAdjacentHTML(
+        'afterbegin',
+        '<p>No slides to display.</p>'
+      );
       return;
     }
 
@@ -116,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const dotsHTML = slidesData
       .map(
         (_, index) =>
-          `<button aria-label="Go to slide ${index + 1}" aria-selected="false" data-index="${index}" class="dot crs-dot"></button>`
+          `<button type="button" aria-label="Go to slide ${index + 1}" data-index="${index}" class="dot crs-dot"></button>`
       )
       .join('');
 

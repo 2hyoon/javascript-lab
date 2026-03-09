@@ -23,10 +23,18 @@
           role="region"
           aria-roledescription="carousel"
           aria-labelledby="carousel-title"
+          aria-describedby="carousel-instructions"
         >
-          <p class="visually-hidden">
-            This is a carousel with images. Use the
-            previous and next buttons to navigate.
+          <!-- <p
+            id="carousel-status"
+            class="visually-hidden"
+            aria-live="polite"
+            aria-atomic="true"
+          >Slide 2 of 5</p> -->
+
+          <p id="carousel-instructions" class="visually-hidden">
+            This is a carousel with images. Use the previous and next buttons to
+            navigate.
           </p>
 
           <!-- Slides will be rendered here -->
@@ -40,11 +48,14 @@
           <button
             id="prev-btn"
             class="crs-prev-btn"
+            type="button"
             aria-label="Previous slide"
             aria-controls="slides-container"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+              focusable="false"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -62,11 +73,14 @@
           <button
             id="next-btn"
             class="crs-next-btn"
+            type="button"
             aria-label="Next slide"
             aria-controls="slides-container"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+              focusable="false"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -81,7 +95,11 @@
           </button>
 
           <!-- Dot Indicators -->
-          <div id="dots-container" class="crs-dots">
+          <div
+            id="dots-container"
+            class="crs-dots"
+            aria-label="Slide navigation"
+          >
             <!-- JS will inject dots here -->
           </div>
         </div>

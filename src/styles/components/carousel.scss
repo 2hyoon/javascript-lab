@@ -65,11 +65,7 @@ body[data-component=carousel] {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgba(255, 255, 255, 0.5);
-
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.8);
-    }
+    background-color: rgba(50, 50, 50, 0.5);
   }
 
   &-next-btn {
@@ -84,10 +80,18 @@ body[data-component=carousel] {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(50, 50, 50, 0.5);
+  }
 
+  &-prev-btn,
+  &-next-btn {
     &:hover {
-      background-color: rgba(255, 255, 255, 0.8);
+      background-color: rgba(100, 100, 100, 0.5);
+    }
+
+    &:focus-visible {
+      outline: 3px solid rgb(248, 248, 248);
+      outline-offset: 2px;
     }
   }
 
@@ -109,9 +113,14 @@ body[data-component=carousel] {
     border: 0;
     box-sizing: border-box;
     box-shadow: 0 0 5px rgba(100, 100, 100, 0.75);
+
+    &:focus-visible {
+      outline: 3px solid rgb(255, 255, 255);
+      outline-offset: 2px;
+    }
   }
 
-  &-dot.current {
+  &-dot[aria-current="true"] {
     background-color: var(--main-highlight-color);
   }
 }
