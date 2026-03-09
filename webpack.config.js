@@ -7,10 +7,7 @@ const HandlebarsPlugin = require('handlebars-webpack-plugin');
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin')
 
 
-module.exports = (env) => {
-  // console.log(`NODE_ENV:  ${env.NODE_ENV}`);
-
-  return {
+module.exports = () => ({
     /**
      * entry
      */
@@ -35,6 +32,15 @@ module.exports = (env) => {
      * devtool
      */
     devtool: 'source-map',
+
+    /**
+     * watch options
+     */
+    watchOptions: {
+      ignored: /node_modules|dist|\.git/,
+      poll: 1000,
+      aggregateTimeout: 300,
+    },
 
     /**
      * module
@@ -117,5 +123,4 @@ module.exports = (env) => {
         server: { baseDir: ['./dist'] }
       })
     ],
-  };
-};
+  });
