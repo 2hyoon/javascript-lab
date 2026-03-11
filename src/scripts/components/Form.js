@@ -7,6 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const termsCheckbox = document.getElementById('agreedToTerms');
   const submitButton = document.getElementById('submit-button');
   const alertContainer = document.getElementById('alert-container');
+  const nameError = document.getElementById('name-error');
+  const emailError = document.getElementById('email-error');
+  const termsError = document.getElementById('terms-error');
 
   function setLoading(loading) {
     const formElements = form.elements;
@@ -18,10 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (loading) {
       submitButton.textContent = 'Processing...';
-      form.setAttribute('area-busy', 'true');
+      form.setAttribute('aria-busy', 'true');
     } else {
       submitButton.textContent = 'Subscribe Now';
-      form.setAttribute('area-busy', 'false');
+      form.setAttribute('aria-busy', 'false');
     }
   }
 
@@ -33,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     alertDiv.className = type === 'error' ? 'alert-error' : 'alert-success';
     alertDiv.setAttribute('role', 'alert');
-    alertDiv.setAttribute('tablindex', '-1'); // Make it programmatically focusable
+    alertDiv.setAttribute('tabindex', '-1'); // Make it programmatically focusable
     alertDiv.insertAdjacentHTML('afterbegin', `<p>${message}</p>`);
     alertContainer.append(alertDiv);
     alertDiv.focus(); // Move focus to the new alert
@@ -43,25 +46,53 @@ document.addEventListener('DOMContentLoaded', () => {
     alertContainer.innerHTML = '';
   }
 
+  function setFieldError(input, errorEl, message) {
+    if (message) {
+      errorEl.textContent = message;
+      input.setAttribute('aria-invalid', 'true');
+      input.setAttribute('aria-describedby', errorEl.id);
+    } else {
+      errorEl.textContent = '';
+      input.removeAttribute('aria-invalid');
+      input.removeAttribute('aria-describedby');
+    }
+  }
+
+  function clearFieldErrors() {
+    setFieldError(nameInput, nameError, '');
+    setFieldError(emailInput, emailError, '');
+    setFieldError(termsCheckbox, termsError, '');
+  }
+
   function validateForm() {
+    clearFieldErrors();
+
     if (!nameInput.value.trim()) {
-      showAlert('error', 'Name is required.');
+      setFieldError(nameInput, nameError, 'Name is required.');
       return false;
     }
 
     if (!emailInput.value.trim()) {
-      showAlert('error', 'Email is required.');
+      setFieldError(emailInput, emailError, 'Email is required.');
       return false;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(emailInput.value)) {
-      showAlert('error', 'Please enter a valid email address.');
+      setFieldError(
+        emailInput,
+        emailError,
+        'Please enter a valid email address.'
+      );
       return false;
     }
 
     if (!termsCheckbox.checked) {
-      showAlert('error', 'You must agree to the terms and conditions.');
+      setFieldError(
+        termsCheckbox,
+        termsError,
+        'You must agree to the terms and conditions.'
+      );
       return false;
     }
 
@@ -117,6 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
       setLoading(false); // Set loading false before showing alert
       showAlert('success', 'Thank you for subscribing!');
       form.reset();
+      clearFieldErrors();
     } catch (err) {
       setLoading(false);
       showAlert('error', 'Failed to submit the form. Please try again later');
