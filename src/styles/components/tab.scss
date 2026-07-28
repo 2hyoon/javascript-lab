@@ -1,4 +1,4 @@
-[data-component="tab"] {
+[data-component='tab'] {
   background-color: rgb(25, 23, 28);
   color: rgb(186, 192, 199);
 }
@@ -7,14 +7,14 @@
   margin-top: 3rem;
   color: rgb(36, 68, 108);
 
-  nav[role="tablist"] {
+  nav[role='tablist'] {
     display: flex;
     gap: 0.5rem;
 
     button {
       border: 0;
       height: 2rem;
-      padding: .5rem 1rem 1.5rem;
+      padding: 0.5rem 1rem 1.5rem;
       font-size: 1rem;
       border-top-left-radius: 8px;
       border-top-right-radius: 8px;
@@ -43,13 +43,13 @@
     border-top-right-radius: 8px;
   }
 
-  [role="tabpanel"] {
+  [role='tabpanel'] {
     display: none;
     padding: 1rem 1.5rem;
     box-sizing: border-box;
   }
 
-  [role="tabpanel"].current {
+  [role='tabpanel'].current {
     display: block;
   }
 }

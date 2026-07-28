@@ -1,4 +1,4 @@
-body[data-component="sortable-table"] {
+body[data-component='sortable-table'] {
   background-color: #1d2531;
   color: #fff;
 }
@@ -30,18 +30,18 @@ th {
   text-align: left;
   letter-spacing: 1px;
   color: #d5d5d5;
-  font-size: .8rem;
+  font-size: 0.8rem;
   cursor: pointer;
   background-color: rgba(55, 65, 81, 1);
 
   &:hover {
-    background-color: rgba(55, 65, 81, .6);
+    background-color: rgba(55, 65, 81, 0.6);
   }
 }
 
 td {
   color: #efefef;
-  font-size: .9rem;
+  font-size: 0.9rem;
 }
 
 tbody tr {

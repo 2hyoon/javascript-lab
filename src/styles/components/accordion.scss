@@ -1,5 +1,5 @@
 .accordion-container {
-  --secondary-color: #ffffff;
+  --secondary-color: #fff;
   --text-color: #333;
   --border-color: #e0e0e0;
   --shadow-color: rgba(0, 0, 0, 0.08);
@@ -55,7 +55,7 @@
   background-color: #f1f1f1;
 }
 
-.accordion-item button[aria-expanded="true"] {
+.accordion-item button[aria-expanded='true'] {
   background-color: #f1f1f1;
 }
 
@@ -80,7 +80,7 @@
   position: relative;
   width: 1.2em;
   height: 1.2em;
-  transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0);
+  transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
   flex-shrink: 0;
   margin-left: 1rem;
 }
@@ -112,7 +112,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   .accordion[data-enhanced='true'] .accordion-content,
   .icon,
   .icon::before,

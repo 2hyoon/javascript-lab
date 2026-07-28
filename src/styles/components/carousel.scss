@@ -24,7 +24,7 @@ body[data-component=carousel] {
 
   &-slides {
     display: flex;
-    transition: transform .7s ease-out;
+    transition: transform 0.7s ease-out;
     height: 100%;
     background: rgba(0, 0, 0, 1);
   }
@@ -120,7 +120,7 @@ body[data-component=carousel] {
     }
   }
 
-  &-dot[aria-current="true"] {
+  &-dot[aria-current='true'] {
     background-color: var(--main-highlight-color);
   }
 }

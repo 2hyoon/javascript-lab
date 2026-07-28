@@ -12,9 +12,9 @@ body {
   grid-template-columns: 3fr 1fr;
   grid-template-rows: auto 1fr auto;
   grid-template-areas:
-    "header header"
-    "main sidebar"
-    "footer footer";
+    'header header'
+    'main sidebar'
+    'footer footer';
 }
 
 .header {
@@ -45,10 +45,10 @@ body {
     grid-template-rows: auto;
     /* 레이아웃을 세로로 쌓이는 구조로 재정의 */
     grid-template-areas:
-      "header"
-      "main"
-      "sidebar"
-      "footer";
+      'header'
+      'main'
+      'sidebar'
+      'footer';
   }
 }
 

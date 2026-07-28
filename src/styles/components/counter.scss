@@ -1,4 +1,4 @@
-body[data-component="counter"] .container {
+body[data-component='counter'] .container {
   display: flex;
   justify-content: center;
   width: 100%;
@@ -43,7 +43,7 @@ body[data-component="counter"] .container {
     border-radius: 5px;
     border: 0;
     font-size: 1rem;
-    padding: .6rem 1rem;
+    padding: 0.6rem 1rem;
     cursor: pointer;
     transition: background-color 0.2s ease-out;
     background-color: rgb(255, 255, 255);
