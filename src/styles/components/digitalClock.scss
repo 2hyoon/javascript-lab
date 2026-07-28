@@ -1,4 +1,4 @@
-body[data-component=digital-clock] {
+body[data-component='digital-clock'] {
   h1 {
     font-size: 1.2rem;
     margin-bottom: 2rem;
@@ -51,15 +51,15 @@ body[data-component=digital-clock] {
 
 .digit-bar-b {
   width: var(--dc-thickness);
-  height: calc(var(--dc-height)/2 - var(--dc-margin) * 1.5);
+  height: calc(var(--dc-height) / 2 - var(--dc-margin) * 1.5);
   top: var(--dc-margin);
   right: 0;
 }
 
 .digit-bar-c {
   width: var(--dc-thickness);
-  height: calc(var(--dc-height)/2 - var(--dc-margin) * 1.5);
-  top: calc(var(--dc-height)/2 + var(--dc-margin) * 0.5);
+  height: calc(var(--dc-height) / 2 - var(--dc-margin) * 1.5);
+  top: calc(var(--dc-height) / 2 + var(--dc-margin) * 0.5);
   right: 0;
 }
 
@@ -73,14 +73,14 @@ body[data-component=digital-clock] {
 
 .digit-bar-e {
   width: var(--dc-thickness);
-  height: calc(var(--dc-height)/2 - var(--dc-margin) * 1.5);
-  top: calc(var(--dc-height)/2 + var(--dc-margin) * 0.5);
+  height: calc(var(--dc-height) / 2 - var(--dc-margin) * 1.5);
+  top: calc(var(--dc-height) / 2 + var(--dc-margin) * 0.5);
   left: 0;
 }
 
 .digit-bar-f {
   width: var(--dc-thickness);
-  height: calc(var(--dc-height)/2 - var(--dc-margin) * 1.5);
+  height: calc(var(--dc-height) / 2 - var(--dc-margin) * 1.5);
   top: var(--dc-margin);
   left: 0;
 }

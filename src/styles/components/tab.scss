@@ -31,7 +31,7 @@
     }
   }
 
-  nav[role=tablist] button[aria-selected=true] {
+  nav[role='tablist'] button[aria-selected='true'] {
     border-top: 5px solid #e541da;
     opacity: 1;
   }

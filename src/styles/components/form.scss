@@ -1,4 +1,4 @@
-[data-component=form] {
+[data-component='form'] {
   h1 {
     font-size: 28px;
   }
@@ -26,8 +26,8 @@
 .sform {
   margin-top: 2rem;
 
-  input[type=text],
-  input[type=email] {
+  input[type='text'],
+  input[type='email'] {
     display: block;
     width: 100%;
     box-sizing: border-box;
@@ -60,7 +60,7 @@
     border: 0;
   }
 
-  fieldSet>div {
+  fieldSet > div {
     margin-bottom: 0.3rem;
   }
 
@@ -69,18 +69,18 @@
     margin-bottom: 0.5rem;
   }
 
-  input[type=radio] {
+  input[type='radio'] {
     margin-bottom: 0.5rem;
   }
 
-  input[type=radio],
-  input[type=checkbox] {
+  input[type='radio'],
+  input[type='checkbox'] {
     &:focus-visible {
       outline: 2px solid var(--main-highlight-color);
     }
   }
 
-  button[type=submit] {
+  button[type='submit'] {
     background-color: rgb(12, 97, 166);
     color: #fff;
     border: 0;
