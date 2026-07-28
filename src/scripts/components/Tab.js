@@ -5,12 +5,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const tabs = document.querySelectorAll('[role="tab"]');
   const panels = document.querySelectorAll('[role="tabpanel"]');
 
-  function switchTab(selectedTab) {
+  function switchTab(selectedTab, moveFocus = true) {
     tabs.forEach((tab, i) => {
       if (tab === selectedTab) {
         tab.setAttribute('aria-selected', true);
         tab.setAttribute('tabindex', 0);
-        tab.focus();
+        if (moveFocus) tab.focus();
         panels[i].classList.add('current');
       } else {
         tab.setAttribute('aria-selected', false);
@@ -31,6 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
       (tab) => tab === document.activeElement
     );
 
+    // the key came from somewhere other than a tab, so it is not ours to handle
+    if (currentIndex === -1) return;
+
     let nextIndex;
 
     switch (e.key) {
@@ -40,13 +43,20 @@ document.addEventListener('DOMContentLoaded', () => {
       case 'ArrowLeft':
         nextIndex = currentIndex === 0 ? tabs.length - 1 : currentIndex - 1;
         break;
-      default:
+      case 'Home':
         nextIndex = 0;
         break;
+      case 'End':
+        nextIndex = tabs.length - 1;
+        break;
+      default:
+        return;
     }
 
+    e.preventDefault();
     switchTab(tabs[nextIndex]);
   });
 
-  switchTab(tabs[0]);
+  // select the first tab without pulling focus away on page load
+  switchTab(tabs[0], false);
 });
