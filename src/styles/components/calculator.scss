@@ -24,7 +24,7 @@ body[data-component='calculator'] {
 
 .calculator {
   &-container {
-    background-color: black;
+    background-color: #000;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -66,7 +66,7 @@ body[data-component='calculator'] {
   }
 
   &-buttons button:focus-visible {
-    outline-color: white;
+    outline-color: #fff;
     outline-width: 2px;
     outline-offset: 0;
   }
