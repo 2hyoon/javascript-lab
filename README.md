@@ -2,6 +2,15 @@
 
 A personal sandbox for continuous learning and focused experimentation.
 
+**[Live demo →](https://javascript-lab.netlify.app/)**
+
+Each demo — accordion, carousel, tabs, modal, clocks, calculator, tic-tac-toe,
+and more — is a self-contained vanilla-JS component on its own static page.
+No framework. Webpack bundles every component into a single `app.js` / `app.css`
+that all pages share, so each component scopes itself to its page through a
+`data-component` marker on `<body>` and enhances markup that already works
+without JavaScript.
+
 ## Getting Started
 
 ### Installation
@@ -16,16 +25,13 @@ $ npm install
 
 ### Running tasks
 
-**Run Webpack devServer with development mode.** This task will automatically open your browser via devServer and reload pages whenever your files get updated.
+**Start the dev build.** Runs `webpack --watch` alongside
+[BrowserSync](https://browsersync.io/), which serves **dist** at
+<http://localhost:3000> and reloads the page whenever a file changes.
+`npm run dev` is an alias for the same task.
 
 ```bash
-$ npm run start
-```
-
-**Build development files.** This task will generate development files and emit them into the **dist** folder.
-
-```bash
-$ npm run dev
+$ npm start
 ```
 
 **Build production files.** This task will generate production files and emit them into the **dist** folder.
@@ -34,7 +40,18 @@ $ npm run dev
 $ npm run prod
 ```
 
-**Run Lint** You can run [ESLint](https://eslint.org/) in CLI.
+**Run tests.** [Vitest](https://vitest.dev/) with a `jsdom` environment. Test
+files live next to the component they cover, as `<Name>.test.js`.
+
+```bash
+$ npm test
+```
+Watch mode.
+```bash
+$ npm run test:watch
+```
+
+**Run Lint** You can run [ESLint](https://eslint.org/) and [Stylelint](https://stylelint.io/) in CLI.
 
 Run Javascript and Sass lint.
 ```bash
@@ -49,7 +66,7 @@ Run Sass Lint.
 $ npm run lint:sass
 ```
 
-**Run Prettier.** You can run [Stylelint](https://prettier.io/) in CLI.
+**Run [Prettier](https://prettier.io/).** You can check or write formatting in CLI.
 
 ```bash
 $ npm run prettier:check
@@ -62,8 +79,6 @@ $ npm run prettier:write
 
 ```bash
 ├── .editorconfig # https://editorconfig.org/
-├── .eslintignore
-├── .eslintrc.json # https://eslint.org/
 ├── .gitignore
 ├── .prettierignore
 ├── .prettierrc.json # https://prettier.io/
@@ -71,31 +86,41 @@ $ npm run prettier:write
 ├── LICENSE
 ├── README.md
 ├── dist # compiled files go here
+├── eslint.config.mjs # https://eslint.org/ (flat config)
 ├── package-lock.json
 ├── package.json
 ├── postcss.config.js
 ├── src # app's source files
-│   ├── fonts
-│   ├── html
-│   │   ├── about.html
-│   │   ├── hbs
-│   │   │   └── header.hbs
-│   │   └── index.html
-│   ├── images
-│   │   ├── sample-a.jpg
-│   │   └── sample-b.jpg
-│   ├── scripts
-│   │   ├── app.js
-│   │   └── components
-│   │       └── button.js
-│   └── styles
-│       ├── app.scss
-│       ├── base
-│       │   └── reset.scss
-│       └── components
-│           └── button.scss
+│   ├── fonts
+│   ├── html # one file per page, compiled by html-webpack-plugin
+│   │   ├── accordion.html
+│   │   ├── index.html # links to every demo
+│   │   ├── partials
+│   │   │   └── header.html
+│   │   └── ... # one .html per demo
+│   ├── images
+│   ├── scripts
+│   │   ├── app.js # imports every component
+│   │   └── components
+│   │       ├── Accordion.js
+│   │       ├── Accordion.test.js
+│   │       └── ... # one PascalCase file per component
+│   └── styles
+│       ├── app.scss # @use's every component stylesheet
+│       ├── base
+│       │   ├── reset.scss
+│       │   └── site.scss
+│       └── components
+│           ├── accordion.scss
+│           └── ... # one camelCase file per component
+├── vitest.config.mjs # https://vitest.dev/
 └── webpack.config.js # webpack entry
 ```
+
+Adding a demo touches four places: a page in `src/html`, a component in
+`src/scripts/components` plus its `import` in `app.js`, a stylesheet in
+`src/styles/components` plus its `@use` in `app.scss`, and a link in
+`src/html/index.html`.
 
 ## License
 
