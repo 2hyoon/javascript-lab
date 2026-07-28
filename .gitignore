@@ -5,3 +5,6 @@ dist
 # local practice work, not ready to publish
 src/html/study-*.html
 src/scripts/study/
+
+# personal working notes
+TODO.md
