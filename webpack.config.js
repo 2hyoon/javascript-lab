@@ -27,11 +27,6 @@ module.exports = () => ({
     },
 
     /**
-     * mode
-     */
-    mode: process.env.NODE_ENV || 'development',
-
-    /**
      * devtool
      */
     devtool: 'source-map',
@@ -41,7 +36,6 @@ module.exports = () => ({
      */
     watchOptions: {
       ignored: /node_modules|dist|\.git/,
-      poll: 1000,
       aggregateTimeout: 300,
     },
 
