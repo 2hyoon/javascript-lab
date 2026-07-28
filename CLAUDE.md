@@ -18,6 +18,8 @@ npm run prettier:check / prettier:write
 
 `dist/` is generated and gitignored — never edit it; edit `src/` and let watch rebuild.
 
+CI (`.github/workflows/ci.yml`) runs `lint`, `test`, and `prod` on Node 22 for **every** push, on any branch. Warnings do not fail it; errors do.
+
 ## Architecture
 
 **Single bundle, many pages.** `src/scripts/app.js` imports *every* component, and `src/styles/app.scss` `@use`s *every* component stylesheet. Webpack emits one `dist/scripts/app.js` and one `dist/styles/app.css`, and each page loads both.

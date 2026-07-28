@@ -1,5 +1,7 @@
 # The JavaScript Lab
 
+[![CI](https://github.com/2hyoon/javascript-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/2hyoon/javascript-lab/actions/workflows/ci.yml)
+
 A personal sandbox for continuous learning and focused experimentation.
 
 **[Live demo →](https://javascript-lab.netlify.app/)**
