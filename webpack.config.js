@@ -1,7 +1,6 @@
 const path = require('path');
 const fs = require('fs');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const sass = require('sass');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -26,6 +25,7 @@ module.exports = () => ({
   output: {
     filename: 'scripts/[name].js',
     path: path.resolve(__dirname, 'dist'),
+    clean: true,
   },
 
   /**
@@ -117,7 +117,6 @@ module.exports = () => ({
    * plugins
    */
   plugins: [
-    new CleanWebpackPlugin(),
     new MiniCssExtractPlugin({
       filename: 'styles/[name].css',
     }),
