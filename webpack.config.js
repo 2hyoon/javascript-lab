@@ -1,11 +1,14 @@
 const path = require('path');
+const fs = require('fs');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const sass = require('sass');
-const HandlebarsPlugin = require('handlebars-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin')
 
+const htmlDir = path.resolve(__dirname, 'src', 'html');
+const htmlPages = fs.readdirSync(htmlDir).filter((file) => file.endsWith('.html'));
 
 module.exports = () => ({
     /**
@@ -94,6 +97,23 @@ module.exports = () => ({
             },
           ],
         },
+
+        /**
+         * html partials
+         * scoped to src/html/partials so page templates are left to
+         * html-webpack-plugin's own template loader
+         */
+        {
+          test: /\.html$/,
+          include: path.join(htmlDir, 'partials'),
+          use: {
+            loader: 'html-loader',
+            options: {
+              sources: false,
+              esModule: false,
+            },
+          },
+        },
       ],
     },
 
@@ -111,11 +131,17 @@ module.exports = () => ({
           { from: './src/fonts/**/*', to: 'fonts/[name][ext]' },
         ],
       }),
-      new HandlebarsPlugin({
-        entry: path.join(process.cwd(), 'src', 'html', '*.html'),
-        output: path.join(process.cwd(), 'dist', '[name].html'),
-        partials: [path.join(process.cwd(), 'src', 'html', 'hbs', '*.hbs')],
-      }),
+      // one instance per page in src/html, emitted flat into dist/
+      ...htmlPages.map(
+        (page) =>
+          new HtmlWebpackPlugin({
+            template: path.join(htmlDir, page),
+            filename: page,
+            // pages link app.js/app.css themselves, so nothing is auto-injected
+            inject: false,
+            minify: false,
+          })
+      ),
       new BrowserSyncPlugin({
         // browse to http://localhost:3000/ during development,
         host: 'localhost',

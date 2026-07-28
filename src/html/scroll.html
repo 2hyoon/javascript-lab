@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="styles/app.css" />
   </head>
   <body data-component="scroll">
-    {{> hbs/header}}
+    <%= require('./partials/header.html') %>
     <div class="container">
       <h1>Infinite Scroll</h1>
       <ul id="post-list"></ul>
