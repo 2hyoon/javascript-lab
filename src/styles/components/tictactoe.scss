@@ -133,6 +133,10 @@
     button {
       width: 100%;
       background-color: rgb(238, 238, 238);
+
+      // Tailwind's preflight leaves form controls inheriting their colour,
+      // so without this the light button picks up the white text above it.
+      color: rgb(27, 27, 27);
       padding: 0.5rem 1rem;
       border: 0;
       border-radius: 6px;

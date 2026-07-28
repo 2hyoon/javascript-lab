@@ -48,7 +48,9 @@ The marker lives on `<body data-component="accordion">` in the page's HTML. Styl
 - Components export nothing and subscribe to `DOMContentLoaded` at import time. `vi.resetModules()` clears the module cache but *not* the listeners already on `document`, so dispatching the event re-runs every previously imported copy against the current DOM. Capture the callback instead — spy on `document.addEventListener` during the import, then call it directly. See the `mount` helper in `Accordion.test.js`.
 - jsdom has no layout, so `scrollHeight` / `offsetWidth` are always 0 and anything derived from them (the accordion's `max-height`, for one) carries no signal. Assert on ARIA state instead.
 
-**Styles:** SCSS → postcss (Tailwind v4 `@tailwindcss/postcss` + autoprefixer) → extracted CSS. Tailwind is pulled in via `@use "tailwindcss"` at the end of `app.scss`; `tailwind.config.js` is a v3-style leftover with empty `content` and is not what drives v4. Most demos are hand-written SCSS, not Tailwind.
+**Styles:** SCSS → postcss (Tailwind v4 `@tailwindcss/postcss` + autoprefixer) → extracted CSS. Tailwind is pulled in via `@use "tailwindcss"` at the end of `app.scss`; `tailwind.config.js` is a v3-style leftover with empty `content` and is not what drives v4. No demo uses a Tailwind utility class — all of it is hand-written SCSS, so Tailwind contributes only its preflight, on top of the normalize in `base/reset.scss`.
+
+That preflight has a sharp edge: it sets `color: inherit` and `background-color: transparent` on every form control. **Style a button or input and you must set both `color` and `background-color`** — giving only a background leaves the control inheriting the surrounding text colour, which reads fine on a light page and disappears on a dark one. Four contrast failures in this repo came from exactly that.
 
 ## Conventions
 

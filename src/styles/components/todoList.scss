@@ -39,6 +39,15 @@
   width: calc(100% - 150px);
   border: 0;
   border-radius: 3px;
+
+  // Tailwind's preflight makes form controls transparent and lets them
+  // inherit their colour, which left dark text sitting on the dark form.
+  background-color: #222;
+  color: #eee;
+
+  &::placeholder {
+    color: #999;
+  }
 }
 
 .todo-add-btn {
