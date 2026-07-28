@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
       showAlert('success', 'Thank you for subscribing!');
       form.reset();
       clearFieldErrors();
-    } catch (err) {
+    } catch {
       setLoading(false);
       showAlert('error', 'Failed to submit the form. Please try again later');
     }

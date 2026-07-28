@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
       (tab) => tab === document.activeElement
     );
 
-    let nextIndex = 0;
+    let nextIndex;
 
     switch (e.key) {
       case 'ArrowRight':

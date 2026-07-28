@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // loading = false;
   }
 
-  function callback(entries, observer) {
+  function callback(entries) {
     // entries.forEach((entry) => {
     //   console.log(entry);
     //   if (entry.isIntersecting) {

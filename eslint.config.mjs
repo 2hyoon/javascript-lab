@@ -2,7 +2,8 @@ import js from '@eslint/js';
 import globals from 'globals';
 
 export default [
-  { ignores: ['dist/**'] },
+  // dist is generated; src/scripts/study holds local practice files
+  { ignores: ['dist/**', 'src/scripts/study/**'] },
 
   js.configs.recommended,
 

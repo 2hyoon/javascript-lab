@@ -39,7 +39,6 @@ class ToDoList {
   }
 
   toggleIndicator() {
-    console.log(this.list.querySelectorAll('li').length);
     this.list.querySelectorAll('li').length > 0
       ? this.indicator.classList.add('off')
       : this.indicator.classList.remove('off');

@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
       data = parsedJson.products;
       buildTable();
     } catch (err) {
-      throw new Error(err);
+      throw new Error('Data could not be fetched.', { cause: err });
     }
   }
 

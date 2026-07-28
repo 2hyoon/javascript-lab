@@ -2,5 +2,6 @@ node_modules
 dist
 .DS_Store
 
-# local scratch pages, not ready to publish
+# local practice work, not ready to publish
 src/html/study-*.html
+src/scripts/study/
