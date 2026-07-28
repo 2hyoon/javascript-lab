@@ -7,6 +7,8 @@
     "start": "webpack --watch --mode development",
     "dev": "webpack --watch --mode development",
     "prod": "webpack --mode production",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "lint:js": "eslint \"src/scripts/**/*.js\" \"*.js\"",
     "lint:sass": "stylelint \"src/styles/**/*.{scss,sass}\"",
     "lint": "npm run lint:js && npm run lint:sass",
@@ -45,6 +47,7 @@
     "globals": "^17.8.0",
     "html-loader": "^5.1.0",
     "html-webpack-plugin": "^5.6.8",
+    "jsdom": "^29.1.1",
     "mini-css-extract-plugin": "^2.10.0",
     "postcss": "^8.5.6",
     "postcss-loader": "^8.2.1",
@@ -55,6 +58,7 @@
     "stylelint-config-sass-guidelines": "^13.0.0",
     "stylelint-config-standard": "^40.0.0",
     "tailwindcss": "^4.1.18",
+    "vitest": "^4.1.10",
     "webpack": "^5.105.2",
     "webpack-cli": "^6.0.1"
   }
