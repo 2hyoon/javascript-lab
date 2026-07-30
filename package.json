@@ -33,7 +33,6 @@
   "homepage": "https://github.com/2hyoon/javascript-lab#readme",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@tailwindcss/postcss": "^4.1.18",
     "autoprefixer": "^10.4.24",
     "browser-sync": "^3.0.4",
     "browser-sync-webpack-plugin": "^2.4.0",
@@ -53,7 +52,6 @@
     "stylelint": "^17.3.0",
     "stylelint-config-sass-guidelines": "^13.0.0",
     "stylelint-config-standard": "^40.0.0",
-    "tailwindcss": "^4.1.18",
     "vitest": "^4.1.10",
     "webpack": "^5.105.2",
     "webpack-cli": "^7.2.1"

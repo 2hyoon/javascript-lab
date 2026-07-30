@@ -1,5 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
+/* normalize.css does not set this and Tailwind's preflight, which used to,
+   is gone. Several components size themselves assuming border-box. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 :root {
   --main-highlight-color: rgb(25, 64, 239);
 }
