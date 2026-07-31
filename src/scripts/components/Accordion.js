@@ -1,25 +1,34 @@
-document.addEventListener('DOMContentLoaded', () => {
-  if (!document.querySelector('[data-component="accordion"]')) return;
+function getPanel(button) {
+  const contentId = button.getAttribute('aria-controls');
+  return contentId ? document.getElementById(contentId) : null;
+}
 
-  function getPanel(button) {
-    const contentId = button.getAttribute('aria-controls');
-    return contentId ? document.getElementById(contentId) : null;
-  }
+// The panel collapses through grid-template-rows, so nothing here measures
+// layout: a height read at init goes stale the moment the window is resized.
+// `inert` takes the collapsed panel out of the accessibility tree *and* out
+// of the tab order — aria-hidden alone would leave its links focusable.
+function setExpandedState(button, panel, expanded) {
+  const buttonEl = button;
+  const panelEl = panel;
 
-  function setExpandedState(button, panel, expanded) {
-    const buttonEl = button;
-    const panelEl = panel;
+  buttonEl.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+  panelEl.dataset.expanded = expanded ? 'true' : 'false';
+  if (expanded) panelEl.removeAttribute('inert');
+  else panelEl.setAttribute('inert', '');
+}
 
-    buttonEl.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-    panelEl.setAttribute('aria-hidden', expanded ? 'false' : 'true');
-    panelEl.style.maxHeight = expanded ? `${panelEl.scrollHeight}px` : '0px';
-  }
+// Enhances every accordion inside `root`, which is what makes markup added
+// after load workable — call it again with the new subtree. Accordions already
+// carrying data-enhanced are skipped, so a second call cannot double-bind.
+// Returns a function that removes every listener this call registered.
+export function initAccordion(root = document) {
+  const controller = new AbortController();
+  const { signal } = controller;
 
-  const accordions = document.querySelectorAll('.accordion');
-  if (!accordions.length) return;
-
-  accordions.forEach((accordion) => {
+  root.querySelectorAll('.accordion').forEach((accordion) => {
     const accordionEl = accordion;
+    if (accordionEl.dataset.enhanced === 'true') return;
+
     const buttons = [
       ...accordionEl.querySelectorAll(
         '.accordion-item h2 > button[aria-controls]'
@@ -43,25 +52,31 @@ document.addEventListener('DOMContentLoaded', () => {
       setExpandedState(button, panel, shouldBeExpanded);
     });
 
-    accordionEl.addEventListener('click', (event) => {
-      const button = event.target.closest(
-        '.accordion-item h2 > button[aria-controls]'
-      );
-      if (!button || !accordionEl.contains(button)) return;
+    accordionEl.addEventListener(
+      'click',
+      (event) => {
+        const button = event.target.closest(
+          '.accordion-item h2 > button[aria-controls]'
+        );
+        if (!button || !accordionEl.contains(button)) return;
 
-      const panel = getPanel(button);
-      if (!panel) return;
+        const panel = getPanel(button);
+        if (!panel) return;
 
-      const isExpanded = button.getAttribute('aria-expanded') === 'true';
+        const isExpanded = button.getAttribute('aria-expanded') === 'true';
 
-      buttons.forEach((otherButton) => {
-        if (otherButton === button) return;
-        const otherPanel = getPanel(otherButton);
-        if (!otherPanel) return;
-        setExpandedState(otherButton, otherPanel, false);
-      });
+        buttons.forEach((otherButton) => {
+          if (otherButton === button) return;
+          const otherPanel = getPanel(otherButton);
+          if (!otherPanel) return;
+          setExpandedState(otherButton, otherPanel, false);
+        });
 
-      setExpandedState(button, panel, !isExpanded);
-    });
+        setExpandedState(button, panel, !isExpanded);
+      },
+      { signal }
+    );
   });
-});
+
+  return () => controller.abort();
+}

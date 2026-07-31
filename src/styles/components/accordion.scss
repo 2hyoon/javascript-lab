@@ -63,17 +63,44 @@
   background-color: var(--secondary-color);
 }
 
+// The row collapses to 0fr instead of animating a measured max-height, so the
+// panel keeps sizing itself to its content — reflow on resize included.
 .accordion[data-enhanced='true'] .accordion-content {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
-.accordion-content p {
-  padding: 1.25rem;
+.accordion[data-enhanced='true'] .accordion-content[data-expanded='true'] {
+  grid-template-rows: 1fr;
+}
+
+// The collapsing child must carry no padding or margin of its own; 0fr only
+// compresses its content box, so any spacing here stays visible when closed.
+.accordion-panel {
+  overflow: hidden;
+}
+
+// Spacing sits on the children so the wrapper itself stays at exactly 0 when
+// the row collapses. Edge padding is split across the first and last child so
+// two stacked elements do not double it up between them.
+.accordion-panel > * {
+  padding: 0 1.25rem;
   margin: 0;
   line-height: 1.6;
   color: #555;
+}
+
+.accordion-panel > :first-child {
+  padding-top: 1.25rem;
+}
+
+.accordion-panel > :last-child {
+  padding-bottom: 1.25rem;
+}
+
+.accordion-panel > * + * {
+  margin-top: 0.75rem;
 }
 
 .icon {
@@ -106,8 +133,10 @@
   transform: rotate(45deg);
 }
 
+// #4d90fe only reached 2.76:1 against the expanded button's #f1f1f1 background,
+// short of the 3:1 WCAG asks of a focus indicator. This one measures 3.99:1.
 .accordion-item button:focus-visible {
-  outline: 3px solid #4d90fe;
+  outline: 3px solid #1a73e8;
   outline-offset: -3px;
 }
 
