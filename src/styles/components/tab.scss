@@ -24,7 +24,7 @@
 .tab {
   margin-top: 3rem;
 
-  nav[role='tablist'] {
+  [role='tablist'] {
     display: flex;
     gap: 0.25rem;
 
@@ -52,12 +52,24 @@
     }
   }
 
-  nav[role='tablist'] button:hover {
+  [role='tablist'] button:hover {
     border-top-color: #a19a8c;
     color: #24231f;
   }
 
-  nav[role='tablist'] button[aria-selected='true'] {
+  // The tabs overlap each other and the panel, so a ring drawn inside the
+  // border would be clipped by a neighbour; a positive offset lifts it clear
+  // onto the page instead, where the accent measures 6.10:1 against #f2f0eb
+  // and 5.33:1 against the tab beside it — both past the 3:1 WCAG asks of a
+  // focus indicator. z-index keeps the ring above the selected tab when the
+  // focused tab is not the selected one.
+  [role='tablist'] button:focus-visible {
+    z-index: 2;
+    outline: 2px solid var(--main-highlight-color);
+    outline-offset: 2px;
+  }
+
+  [role='tablist'] button[aria-selected='true'] {
     z-index: 1;
     border-top-color: var(--main-highlight-color);
     border-bottom-color: #faf9f5;
@@ -73,12 +85,17 @@
   }
 
   [role='tabpanel'] {
-    display: none;
     padding: 1.25rem 1.5rem;
     box-sizing: border-box;
   }
 
-  [role='tabpanel'].current {
+  // Hiding the panels is gated on the marker the script sets, so a reader who
+  // never got the script keeps every panel — and every link inside one.
+  &[data-enhanced='true'] [role='tabpanel'] {
+    display: none;
+  }
+
+  &[data-enhanced='true'] [role='tabpanel'].current {
     display: block;
   }
 

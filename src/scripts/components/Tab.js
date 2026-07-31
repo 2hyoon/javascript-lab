@@ -1,62 +1,103 @@
-document.addEventListener('DOMContentLoaded', () => {
-  if (!document.querySelector('[data-component="tab"]')) return;
+function getPanel(tab) {
+  const panelId = tab.getAttribute('aria-controls');
+  return panelId ? document.getElementById(panelId) : null;
+}
 
-  const tabList = document.querySelector('[role="tablist"]');
-  const tabs = document.querySelectorAll('[role="tab"]');
-  const panels = document.querySelectorAll('[role="tabpanel"]');
+// The tab strip is a single stop in the tab order: only the selected tab is
+// reachable with Tab, and the arrow keys move within the strip. That roving
+// tabindex, aria-selected and the visible panel all describe one selection,
+// so they are written together and never separately.
+function setSelectedState(tab, panel, selected) {
+  const tabEl = tab;
 
-  function switchTab(selectedTab, moveFocus = true) {
-    tabs.forEach((tab, i) => {
-      if (tab === selectedTab) {
-        tab.setAttribute('aria-selected', true);
-        tab.setAttribute('tabindex', 0);
-        if (moveFocus) tab.focus();
-        panels[i].classList.add('current');
-      } else {
-        tab.setAttribute('aria-selected', false);
-        tab.setAttribute('tabindex', -1);
-        panels[i].classList.remove('current');
-      }
-    });
-  }
+  tabEl.setAttribute('aria-selected', selected ? 'true' : 'false');
+  tabEl.setAttribute('tabindex', selected ? '0' : '-1');
+  panel.classList.toggle('current', selected);
+}
 
-  tabList.addEventListener('click', (e) => {
-    const clickedTab = e.target.closest('button');
+// Enhances every tab widget inside `root`, which is what makes markup added
+// after load workable — call it again with the new subtree. Widgets already
+// carrying data-enhanced are skipped, so a second call cannot double-bind.
+// Returns a function that removes every listener this call registered.
+export function initTab(root = document) {
+  const controller = new AbortController();
+  const { signal } = controller;
 
-    if (clickedTab) switchTab(clickedTab);
-  });
+  root.querySelectorAll('.tab').forEach((widget) => {
+    const widgetEl = widget;
+    if (widgetEl.dataset.enhanced === 'true') return;
 
-  tabList.addEventListener('keydown', (e) => {
-    const currentIndex = Array.from(tabs).findIndex(
-      (tab) => tab === document.activeElement
-    );
+    const tabList = widgetEl.querySelector('[role="tablist"]');
+    if (!tabList) return;
 
-    // the key came from somewhere other than a tab, so it is not ours to handle
-    if (currentIndex === -1) return;
+    // a tab whose aria-controls points nowhere has no panel to show, so it is
+    // left out of the strip entirely rather than handled at every use
+    const tabs = [
+      ...tabList.querySelectorAll('[role="tab"][aria-controls]'),
+    ].filter((tab) => getPanel(tab));
+    if (!tabs.length) return;
 
-    let nextIndex;
+    widgetEl.dataset.enhanced = 'true';
 
-    switch (e.key) {
-      case 'ArrowRight':
-        nextIndex = currentIndex === tabs.length - 1 ? 0 : currentIndex + 1;
-        break;
-      case 'ArrowLeft':
-        nextIndex = currentIndex === 0 ? tabs.length - 1 : currentIndex - 1;
-        break;
-      case 'Home':
-        nextIndex = 0;
-        break;
-      case 'End':
-        nextIndex = tabs.length - 1;
-        break;
-      default:
-        return;
+    function select(selectedTab, moveFocus = true) {
+      tabs.forEach((tab) => {
+        setSelectedState(tab, getPanel(tab), tab === selectedTab);
+      });
+
+      if (moveFocus) selectedTab.focus();
     }
 
-    e.preventDefault();
-    switchTab(tabs[nextIndex]);
+    tabList.addEventListener(
+      'click',
+      (event) => {
+        const tab = event.target.closest('[role="tab"]');
+        if (!tab || !tabs.includes(tab)) return;
+
+        select(tab);
+      },
+      { signal }
+    );
+
+    tabList.addEventListener(
+      'keydown',
+      (event) => {
+        const currentIndex = tabs.indexOf(document.activeElement);
+
+        // the key came from somewhere other than a tab, so it is not ours to handle
+        if (currentIndex === -1) return;
+
+        let nextIndex;
+
+        switch (event.key) {
+          case 'ArrowRight':
+            nextIndex = (currentIndex + 1) % tabs.length;
+            break;
+          case 'ArrowLeft':
+            nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+            break;
+          case 'Home':
+            nextIndex = 0;
+            break;
+          case 'End':
+            nextIndex = tabs.length - 1;
+            break;
+          default:
+            return;
+        }
+
+        event.preventDefault();
+        select(tabs[nextIndex]);
+      },
+      { signal }
+    );
+
+    // the markup names the tab to open, as the accordion does; the first tab
+    // is only a fallback. Focus stays put — this runs on page load.
+    const preSelected = tabs.find(
+      (tab) => tab.getAttribute('aria-selected') === 'true'
+    );
+    select(preSelected ?? tabs[0], false);
   });
 
-  // select the first tab without pulling focus away on page load
-  switchTab(tabs[0], false);
-});
+  return () => controller.abort();
+}
