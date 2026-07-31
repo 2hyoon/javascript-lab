@@ -13,18 +13,19 @@
       <section>
         <h1>Tab Component</h1>
         <p>
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Earum ad
-          quas blanditiis ipsum quae odio.
+          A set of panels that share one area of the page, with only one panel
+          shown at a time. Pick a tab with the mouse, or move through them with
+          the arrow keys.
         </p>
         <div class="tab">
-          <nav aria-label="Tabs" role="tablist" aria-labelledby="tab-label">
+          <nav aria-label="Tabs" role="tablist">
             <button
               id="tab-1"
               role="tab"
               aria-selected="true"
               aria-controls="panel-1"
             >
-              Ipsum
+              What is a tab?
             </button>
             <button
               id="tab-2"
@@ -32,7 +33,7 @@
               aria-selected="false"
               aria-controls="panel-2"
             >
-              consectetur
+              Keyboard support
             </button>
             <button
               id="tab-3"
@@ -40,7 +41,7 @@
               aria-selected="false"
               aria-controls="panel-3"
             >
-              Earum
+              When not to use tabs
             </button>
           </nav>
           <div class="tab-panels">
@@ -51,11 +52,23 @@
               aria-labelledby="tab-1"
               class="current"
             >
-              <h2>Ipsum</h2>
+              <h2>What is a tab?</h2>
               <p>
-                1 Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab
-                nulla sed iusto mollitia repellendus quasi veritatis provident
-                facilis perspiciatis labore.
+                A tab widget lets several panels of related content share the
+                same space. The tabs act as labels for those panels, so a reader
+                can see what is available without scrolling past all of it, and
+                only the selected panel is rendered at any one time.
+              </p>
+              <p>
+                Each button carries <code>aria-controls</code> pointing at the
+                panel it owns, and each panel points back with
+                <code>aria-labelledby</code>. That pairing is what tells a
+                screen reader which heading belongs to which tab.
+              </p>
+              <p>
+                <a href="https://www.w3.org/WAI/ARIA/apg/patterns/tabs/">
+                  Read the WAI-ARIA tabs pattern
+                </a>
               </p>
             </div>
             <div
@@ -64,11 +77,26 @@
               tabindex="0"
               aria-labelledby="tab-2"
             >
-              <h2>consectetur</h2>
+              <h2>Keyboard support</h2>
               <p>
-                2 Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab
-                nulla sed iusto mollitia repellendus quasi veritatis provident
-                facilis perspiciatis labore.
+                The whole tab strip is a single stop in the tab order. Once
+                focus lands there, the left and right arrow keys move between
+                tabs and wrap around at either end, while
+                <kbd>Home</kbd> and <kbd>End</kbd> jump straight to the first
+                and last tab.
+              </p>
+              <p>
+                That is a roving tabindex: the selected tab holds
+                <code>tabindex="0"</code> and every other tab holds
+                <code>-1</code>, so pressing <kbd>Tab</kbd> leaves the strip
+                instead of walking through every label.
+              </p>
+              <p>
+                <a
+                  href="https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/"
+                >
+                  Read about developing a keyboard interface
+                </a>
               </p>
             </div>
             <div
@@ -77,11 +105,19 @@
               tabindex="0"
               aria-labelledby="tab-3"
             >
-              <h2>Earum</h2>
+              <h2>When not to use tabs</h2>
               <p>
-                3 Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab
-                nulla sed iusto mollitia repellendus quasi veritatis provident
-                facilis perspiciatis labore.
+                Tabs hide everything except the panel in front, so they are a
+                poor fit when the reader needs to compare two panels, or when
+                the content is meant to be read straight through. Hidden text is
+                also missed by the browser's find-in-page.
+              </p>
+              <p>
+                If the sections are independent and the reader may want several
+                open at once, an accordion is usually the better shape.
+              </p>
+              <p>
+                <a href="accordion.html">See the accordion demo</a>
               </p>
             </div>
           </div>
