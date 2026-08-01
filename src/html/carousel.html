@@ -11,10 +11,10 @@
     <%= require('./partials/header.html') %>
     <div class="container">
       <section>
-        <h1 id="carousel-title">Random Image Carousel</h1>
+        <h1 id="carousel-title">Carousel Component</h1>
         <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto
-          repellat veritatis totam! Expedita, sint doloremque!
+          A set of slides that take turns in one area of the page. It rotates on
+          its own, so the button in the corner stops it — and keeps it stopped.
         </p>
 
         <div
@@ -25,26 +25,138 @@
           aria-labelledby="carousel-title"
           aria-describedby="carousel-instructions"
         >
-          <!-- <p
-            id="carousel-status"
-            class="visually-hidden"
-            aria-live="polite"
-            aria-atomic="true"
-          >Slide 2 of 5</p> -->
-
           <p id="carousel-instructions" class="visually-hidden">
             This is a carousel with images. Use the previous and next buttons to
             navigate.
           </p>
 
-          <!-- Slides will be rendered here -->
+          <!-- Written on every slide change, but only announced while the
+               carousel is not rotating on its own: aria-live is flipped to
+               "off" whenever autoplay is running. -->
+          <p
+            id="carousel-status"
+            class="crs-status visually-hidden"
+            role="status"
+            aria-live="polite"
+          ></p>
+
+          <!-- Slides live in the markup, so the carousel still shows its
+               content without JS. Captions carry the text, so the images
+               themselves are decorative (alt=""). -->
           <div id="slides-container" class="crs-slides">
-            <!-- JS will inject slides here -->
+            <div
+              class="crs-slide"
+              role="group"
+              aria-roledescription="slide"
+              aria-label="1 of 5"
+            >
+              <img
+                src="https://picsum.photos/1200/800?random=1"
+                alt=""
+                width="1200"
+                height="800"
+                fetchpriority="high"
+              />
+              <div class="crs-caption">
+                <h2>Discover Majestic Mountains</h2>
+                <p>
+                  Experience the breathtaking views and serene landscapes of the
+                  world's highest peaks.
+                </p>
+              </div>
+            </div>
+
+            <div
+              class="crs-slide"
+              role="group"
+              aria-roledescription="slide"
+              aria-label="2 of 5"
+            >
+              <img
+                src="https://picsum.photos/1200/800?random=2"
+                alt=""
+                width="1200"
+                height="800"
+                fetchpriority="low"
+              />
+              <div class="crs-caption">
+                <h2>Vibrant Cityscapes at Night</h2>
+                <p>
+                  Explore the bustling energy and stunning lights of modern
+                  metropolises after dark.
+                </p>
+              </div>
+            </div>
+
+            <div
+              class="crs-slide"
+              role="group"
+              aria-roledescription="slide"
+              aria-label="3 of 5"
+            >
+              <img
+                src="https://picsum.photos/1200/800?random=3"
+                alt=""
+                width="1200"
+                height="800"
+                fetchpriority="low"
+              />
+              <div class="crs-caption">
+                <h2>Serene Coastal Escapes</h2>
+                <p>
+                  Relax on pristine beaches and listen to the gentle waves of
+                  the crystal-clear ocean.
+                </p>
+              </div>
+            </div>
+
+            <div
+              class="crs-slide"
+              role="group"
+              aria-roledescription="slide"
+              aria-label="4 of 5"
+            >
+              <img
+                src="https://picsum.photos/1200/800?random=4"
+                alt=""
+                width="1200"
+                height="800"
+                fetchpriority="low"
+              />
+              <div class="crs-caption">
+                <h2>Enchanting Forest Trails</h2>
+                <p>
+                  Wander through ancient forests and connect with the
+                  tranquility of nature.
+                </p>
+              </div>
+            </div>
+
+            <div
+              class="crs-slide"
+              role="group"
+              aria-roledescription="slide"
+              aria-label="5 of 5"
+            >
+              <img
+                src="https://picsum.photos/1200/800?random=5"
+                alt=""
+                width="1200"
+                height="800"
+                fetchpriority="low"
+              />
+              <div class="crs-caption">
+                <h2>Architectural Wonders</h2>
+                <p>
+                  Marvel at the ingenuity and beauty of iconic structures from
+                  around the globe.
+                </p>
+              </div>
+            </div>
           </div>
 
-          <!-- slide content  aria-live="polite" aria-atomic="true" -->
-
-          <!-- Navigation Arrow - Previous -->
+          <!-- Every control below does nothing without JS, so all of them stay
+               hidden until the script sets data-enhanced on the carousel. -->
           <button
             id="prev-btn"
             class="crs-prev-btn"
@@ -69,7 +181,6 @@
             </svg>
           </button>
 
-          <!-- Navigation Arrow - Next -->
           <button
             id="next-btn"
             class="crs-next-btn"
@@ -94,14 +205,25 @@
             </svg>
           </button>
 
-          <!-- Dot Indicators -->
+          <!-- WCAG 2.2.2: content that moves on its own needs a way to stop
+               it. The label is the accessible name, so JS swaps the text. -->
+          <button
+            id="autoplay-btn"
+            class="crs-autoplay-btn"
+            type="button"
+            aria-controls="slides-container"
+          >
+            Pause
+          </button>
+
+          <!-- Dots are enhancement-only, so JS injects them. role="group" is
+               what lets the aria-label below be exposed at all. -->
           <div
             id="dots-container"
             class="crs-dots"
+            role="group"
             aria-label="Slide navigation"
-          >
-            <!-- JS will inject dots here -->
-          </div>
+          ></div>
         </div>
       </section>
     </div>

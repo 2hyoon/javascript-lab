@@ -1,159 +1,172 @@
-document.addEventListener('DOMContentLoaded', () => {
-  if (!document.querySelector('[data-component=carousel]')) return;
+const AUTOPLAY_INTERVAL = 5000;
 
-  const slidesData = [
-    {
-      imageUrl: 'https://picsum.photos/1200/800?random=1',
-      title: 'Discover Majestic Mountains',
-      description:
-        "Experience the breathtaking views and serene landscapes of the world's highest peaks.",
-    },
-    {
-      imageUrl: 'https://picsum.photos/1200/800?random=2',
-      title: 'Vibrant Cityscapes at Night',
-      description:
-        'Explore the bustling energy and stunning lights of modern metropolises after dark.',
-    },
-    {
-      imageUrl: 'https://picsum.photos/1200/800?random=3',
-      title: 'Serene Coastal Escapes',
-      description:
-        'Relax on pristine beaches and listen to the gentle waves of the crystal-clear ocean.',
-    },
-    {
-      imageUrl: 'https://picsum.photos/1200/800?random=4',
-      title: 'Enchanting Forest Trails',
-      description:
-        'Wander through ancient forests and connect with the tranquility of nature.',
-    },
-    {
-      imageUrl: 'https://picsum.photos/1200/800?random=5',
-      title: 'Architectural Wonders',
-      description:
-        'Marvel at the ingenuity and beauty of iconic structures from around the globe.',
-    },
-  ];
+// A slide's visibility, its dot and the tab order all describe one selection,
+// so they are written together and never separately. `inert` does the work
+// that aria-hidden cannot: it takes the offscreen slide out of the
+// accessibility tree *and* out of the tab order, so a caption link three
+// slides away is not focusable.
+function setCurrentState(slide, dot, current) {
+  const slideEl = slide;
+  const dotEl = dot;
 
-  const carouselContainer = document.getElementById('carousel-container');
-  const slidesContainer = document.getElementById('slides-container');
-  const prevButton = document.getElementById('prev-btn');
-  const nextButton = document.getElementById('next-btn');
-  const dotsContainer = document.getElementById('dots-container');
+  if (current) slideEl.removeAttribute('inert');
+  else slideEl.setAttribute('inert', '');
 
-  const autoPlayInterval = 5000;
-  let currentIndex = 0;
-  let autoPlayTimerID = null;
+  if (dotEl) dotEl.setAttribute('aria-current', current ? 'true' : 'false');
+}
 
-  function updateUI() {
-    slidesContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
+// Enhances every carousel inside `root`, which is what makes markup added
+// after load workable — call it again with the new subtree. Carousels already
+// carrying data-enhanced are skipped, so a second call cannot double-bind.
+// Returns a function that removes every listener *and stops every timer* this
+// call started; the timer is why this component needs the handle at all.
+export function initCarousel(root = document) {
+  const controller = new AbortController();
+  const { signal } = controller;
+  const stoppers = [];
 
-    // Hide non-active slides from assistive technologies.
-    slidesContainer.querySelectorAll('.crs-slide').forEach((slide, index) => {
-      const isCurrentSlide = index === currentIndex;
-      slide.setAttribute('aria-hidden', String(!isCurrentSlide));
-    });
+  root.querySelectorAll('.crs').forEach((carousel) => {
+    const carouselEl = carousel;
+    if (carouselEl.dataset.enhanced === 'true') return;
 
-    // dots
-    dotsContainer.querySelectorAll('.dot').forEach((dot, index) => {
-      if (index === currentIndex) {
-        dot.setAttribute('aria-current', 'true');
-      } else {
-        dot.removeAttribute('aria-current');
-      }
-    });
-  }
+    const slidesContainer = carouselEl.querySelector('.crs-slides');
+    const slides = [...carouselEl.querySelectorAll('.crs-slide')];
+    if (!slidesContainer || !slides.length) return;
 
-  function goToNext() {
-    currentIndex =
-      currentIndex === slidesData.length - 1 ? 0 : currentIndex + 1;
-    updateUI();
-  }
+    const dotsContainer = carouselEl.querySelector('.crs-dots');
+    const statusEl = carouselEl.querySelector('.crs-status');
+    const autoPlayButton = carouselEl.querySelector('.crs-autoplay-btn');
 
-  function goToPrev() {
-    currentIndex =
-      currentIndex === 0 ? slidesData.length - 1 : currentIndex - 1;
-    updateUI();
-  }
+    carouselEl.dataset.enhanced = 'true';
 
-  function goToSlide(index) {
-    currentIndex = index;
-    updateUI();
-    resetAutoPlay();
-  }
-
-  function startAutoPlay() {
-    if (autoPlayInterval > 0) {
-      autoPlayTimerID = setInterval(goToNext, autoPlayInterval);
-    }
-  }
-
-  function stopAutoPlay() {
-    clearInterval(autoPlayTimerID);
-  }
-
-  function resetAutoPlay() {
-    stopAutoPlay();
-    startAutoPlay();
-  }
-
-  function renderUI() {
-    if (
-      !carouselContainer ||
-      !slidesContainer ||
-      !prevButton ||
-      !nextButton ||
-      !dotsContainer
-    ) {
-      return;
+    if (dotsContainer) {
+      dotsContainer.innerHTML = slides
+        .map(
+          (_, index) =>
+            `<button type="button" class="crs-dot" data-index="${index}" aria-label="Go to slide ${index + 1}"></button>`
+        )
+        .join('');
     }
 
-    if (!slidesData || slidesData.length === 0) {
-      carouselContainer.insertAdjacentHTML(
-        'afterbegin',
-        '<p>No slides to display.</p>'
-      );
-      return;
-    }
+    const dots = dotsContainer
+      ? [...dotsContainer.querySelectorAll('.crs-dot')]
+      : [];
 
-    // slides
-    const slidesHTML = slidesData
-      .map(
-        (slide, index) =>
-          `<div class="crs-slide" aria-label="slide ${index + 1} of ${slidesData.length}"><img src="${slide.imageUrl}" alt="${slide.title}"></div>`
-      )
-      .join('');
+    let currentIndex = 0;
 
-    slidesContainer.insertAdjacentHTML('afterbegin', slidesHTML);
+    // Autoplay is two separate facts. `wantsAutoPlay` is what the user asked
+    // for through the button; `timerId` is whether it is *actually* rotating
+    // right now. Hover, focus and a backgrounded tab suspend the rotation
+    // without changing the intent, so leaving the carousel resumes it but
+    // pressing Pause does not.
+    let wantsAutoPlay = !window.matchMedia('(prefers-reduced-motion: reduce)')
+      .matches;
+    let timerId = null;
+    let pointerInside = false;
+    let focusInside = false;
 
-    // dots
-    const dotsHTML = slidesData
-      .map(
-        (_, index) =>
-          `<button type="button" aria-label="Go to slide ${index + 1}" data-index="${index}" class="dot crs-dot"></button>`
-      )
-      .join('');
+    function goTo(index) {
+      currentIndex = (index + slides.length) % slides.length;
+      slidesContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
 
-    dotsContainer.insertAdjacentHTML('afterbegin', dotsHTML);
-
-    dotsContainer.querySelectorAll('.dot').forEach((dot) => {
-      dot.addEventListener('click', () => {
-        goToSlide(Number(dot.dataset.index));
+      slides.forEach((slide, i) => {
+        setCurrentState(slide, dots[i], i === currentIndex);
       });
+
+      if (statusEl) {
+        statusEl.textContent = `Slide ${currentIndex + 1} of ${slides.length}`;
+      }
+    }
+
+    function syncAutoPlay() {
+      const suspended = pointerInside || focusInside || document.hidden;
+      const shouldRun = wantsAutoPlay && !suspended;
+
+      if (shouldRun && timerId === null) {
+        timerId = setInterval(() => goTo(currentIndex + 1), AUTOPLAY_INTERVAL);
+      } else if (!shouldRun && timerId !== null) {
+        clearInterval(timerId);
+        timerId = null;
+      }
+
+      if (autoPlayButton) {
+        autoPlayButton.textContent = wantsAutoPlay ? 'Pause' : 'Play';
+      }
+
+      // Rotation is not a user action, so it must not be announced. Only the
+      // slide changes that happen while nothing is rotating get through.
+      if (statusEl) {
+        statusEl.setAttribute('aria-live', timerId === null ? 'polite' : 'off');
+      }
+    }
+
+    // Manual navigation restarts the countdown, so the slide the user just
+    // chose gets a full interval instead of being swept away mid-read.
+    function goToManually(index) {
+      goTo(index);
+
+      if (timerId !== null) {
+        clearInterval(timerId);
+        timerId = null;
+        syncAutoPlay();
+      }
+    }
+
+    carouselEl.addEventListener(
+      'click',
+      (event) => {
+        const control = event.target.closest('button');
+        if (!control || !carouselEl.contains(control)) return;
+
+        if (control.matches('.crs-prev-btn')) {
+          goToManually(currentIndex - 1);
+        } else if (control.matches('.crs-next-btn')) {
+          goToManually(currentIndex + 1);
+        } else if (control.matches('.crs-dot')) {
+          goToManually(Number(control.dataset.index));
+        } else if (control.matches('.crs-autoplay-btn')) {
+          wantsAutoPlay = !wantsAutoPlay;
+          syncAutoPlay();
+        }
+      },
+      { signal }
+    );
+
+    ['mouseenter', 'mouseleave'].forEach((type) => {
+      carouselEl.addEventListener(
+        type,
+        (event) => {
+          pointerInside = event.type === 'mouseenter';
+          syncAutoPlay();
+        },
+        { signal }
+      );
     });
 
-    prevButton.addEventListener('click', () => {
-      goToPrev();
-      resetAutoPlay();
+    ['focusin', 'focusout'].forEach((type) => {
+      carouselEl.addEventListener(
+        type,
+        (event) => {
+          focusInside = event.type === 'focusin';
+          syncAutoPlay();
+        },
+        { signal }
+      );
     });
 
-    nextButton.addEventListener('click', () => {
-      goToNext();
-      resetAutoPlay();
+    document.addEventListener('visibilitychange', syncAutoPlay, { signal });
+
+    stoppers.push(() => {
+      clearInterval(timerId);
+      timerId = null;
     });
 
-    updateUI();
-    // startAutoPlay();
-  }
+    goTo(0);
+    syncAutoPlay();
+  });
 
-  renderUI();
-});
+  return () => {
+    controller.abort();
+    stoppers.forEach((stop) => stop());
+  };
+}

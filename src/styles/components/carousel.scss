@@ -19,20 +19,27 @@ body[data-component='carousel'] {
   overflow: hidden;
   max-width: 1000px;
   width: 100%;
-  height: 500px;
+  // Was a flat 500px, which stayed 500px tall on a 360px-wide phone. The ratio
+  // matches what the box used to be at its 1000px maximum, so the desktop
+  // rendering is unchanged and only the narrow end scales.
+  aspect-ratio: 2 / 1;
   margin-top: 3rem;
 
+  // Without JS this is a plain horizontal scroller, so all five slides stay
+  // reachable. The script turns it into a transform track instead.
   &-slides {
     display: flex;
-    transition: transform 0.7s ease-out;
     height: 100%;
-    background: rgba(0, 0, 0, 1);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    background: #000;
   }
 
   &-slide {
     position: relative;
     min-width: 100%;
     height: 100%;
+    scroll-snap-align: start;
 
     img {
       display: block;
@@ -41,58 +48,86 @@ body[data-component='carousel'] {
       object-fit: cover;
       object-position: center;
     }
+  }
 
-    &::after {
-      content: '';
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      background: rgba(0, 0, 0, 0);
-      background: linear-gradient(
-        180deg,
-        rgba(0, 0, 0, 0) 70%,
-        rgba(0, 0, 0, 0.3) 90%,
-        rgba(0, 0, 0, 0.7) 100%
-      );
+  // The scrim belongs to the caption, not to the slide: anchored to a share of
+  // the slide's height it went transparent exactly where the heading sits, and
+  // it could not follow the caption as the text wrapped to more lines. The
+  // fade is one padding-top long, so it finishes where the text begins and
+  // every line sits on at least 0.72 — better than 9:1 against any photo.
+  // Both read the same variable so the narrow-screen padding below cannot
+  // shrink one without the other and quietly drop the text onto a lighter
+  // stretch of the gradient.
+  &-caption {
+    --caption-fade: 1.5rem;
+
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    padding: var(--caption-fade) 2rem 3.5rem;
+    color: rgb(238, 238, 238);
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0) 0,
+      rgba(0, 0, 0, 0.72) var(--caption-fade),
+      rgba(0, 0, 0, 0.8) 100%
+    );
+
+    h2 {
+      margin: 0 0 0.25rem;
+      font-size: 1.5rem;
+    }
+
+    p {
+      margin: 0;
+      max-width: 60ch;
     }
   }
 
-  &-prev-btn {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3rem;
-    height: 3rem;
-    border-radius: 100%;
-    border: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: rgba(50, 50, 50, 0.5);
-  }
-
-  &-next-btn {
-    position: absolute;
-    right: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3rem;
-    height: 3rem;
-    border-radius: 100%;
-    border: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: rgba(50, 50, 50, 0.5);
-  }
-
+  // The two arrows are one button in two positions, so only `left`/`right`
+  // below is allowed to differ.
   &-prev-btn,
   &-next-btn {
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 3rem;
+    height: 3rem;
     padding: 0;
+    border-radius: 100%;
+  }
+
+  &-prev-btn {
+    left: 1rem;
+  }
+
+  &-next-btn {
+    right: 1rem;
+  }
+
+  &-autoplay-btn {
+    top: 1rem;
+    right: 1rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 0.875rem;
+  }
+
+  // Every control shares one palette. Both `color` and `background-color` are
+  // set together on purpose: a control with only a background falls back to
+  // the browser's black `buttontext`, which disappears on this dark demo.
+  &-prev-btn,
+  &-next-btn,
+  &-autoplay-btn {
+    position: absolute;
+    z-index: 2;
+    border: 0;
     color: rgb(238, 238, 238);
+    background-color: rgba(50, 50, 50, 0.5);
 
     &:hover {
       background-color: rgba(100, 100, 100, 0.5);
@@ -106,6 +141,7 @@ body[data-component='carousel'] {
 
   &-dots {
     position: absolute;
+    z-index: 2;
     left: 0;
     bottom: 1rem;
     width: 100%;
@@ -115,21 +151,98 @@ body[data-component='carousel'] {
   }
 
   &-dot {
+    position: relative;
     width: 1rem;
     height: 1rem;
+    border: 0;
     border-radius: 1rem;
     background-color: rgb(255, 255, 255);
-    border: 0;
-    box-sizing: border-box;
     box-shadow: 0 0 5px rgba(100, 100, 100, 0.75);
 
+    &[aria-current='true'] {
+      background-color: var(--main-highlight-color);
+    }
+
+    &:hover {
+      transform: scale(1.2);
+    }
+
+    // A white ring alone can disappear on a bright photo, so a dark one sits
+    // just inside it: whichever way the slide goes, one of the two has
+    // contrast against it.
     &:focus-visible {
       outline: 3px solid rgb(255, 255, 255);
       outline-offset: 2px;
+      box-shadow: 0 0 0 2px rgb(20, 22, 36);
+    }
+
+    // The dot stays 16px so the strip still reads as dots, but a 16px pointer
+    // target is fiddly on touch, so the target alone is grown to 24px.
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 24px;
+      height: 24px;
     }
   }
+}
 
-  &-dot[aria-current='true'] {
-    background-color: var(--main-highlight-color);
+// Every control is useless without JS, so none of them appear until the script
+// has taken over. The slide track stops being a scroller at the same moment.
+.crs:not([data-enhanced='true']) {
+  .crs-prev-btn,
+  .crs-next-btn,
+  .crs-autoplay-btn,
+  .crs-dots {
+    display: none;
+  }
+}
+
+// The track must stop clipping once it is a transform rail: an overflow other
+// than visible makes it a scroll container, and the slides would then be
+// confined to its own 100%-wide box — translating it would carry that box off
+// screen and take every slide with it. Clipping is `.crs`'s job.
+.crs[data-enhanced='true'] .crs-slides {
+  overflow: visible;
+  transition: transform 0.7s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crs[data-enhanced='true'] .crs-slides {
+    transition: none;
+  }
+}
+
+// Below this width the slide shrinks faster than the text inside it. At 390px
+// the 2/1 box is 171px tall while the caption wants 194px, so the caption
+// covered the photo outright — the two causes have to be treated together,
+// since a taller box or a smaller caption alone still leaves it at 75%/65%.
+// The cut is at 640 rather than the phone widths that prompted it: the full
+// caption does not earn its space back until the slide is ~300px tall, so a
+// lower breakpoint just moves the problem to the width right above it.
+@media (max-width: 640px) {
+  .crs {
+    aspect-ratio: 4 / 3;
+  }
+
+  .crs-caption {
+    --caption-fade: 0.875rem;
+
+    padding: var(--caption-fade) 1.25rem 2.5rem;
+  }
+
+  .crs-caption h2 {
+    font-size: 1.125rem;
+  }
+
+  .crs-caption p {
+    font-size: 0.875rem;
+  }
+
+  .crs-dots {
+    bottom: 0.75rem;
   }
 }
