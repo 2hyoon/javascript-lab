@@ -2,6 +2,7 @@
 // import './components/Debounce';
 import { initAccordion } from './components/Accordion';
 import { initTab } from './components/Tab';
+import { initModal } from './components/Modal';
 import './components/ToDoList';
 import './components/Counter';
 import './components/DigitalClock';
@@ -11,13 +12,13 @@ import './components/SortableTable';
 import './components/Form';
 import './components/Carousel';
 import './components/TicTacToe';
-import './components/Modal';
 import './components/Scroll';
 
-// Components above still start themselves on import. Accordion and Tab no
-// longer do: they export an init, so deciding *when* and *where* they run
+// Components above still start themselves on import. Accordion, Tab and Modal
+// no longer do: they export an init, so deciding *when* and *where* they run
 // happens here.
 document.addEventListener('DOMContentLoaded', () => {
   if (document.querySelector('[data-component="accordion"]')) initAccordion();
   if (document.querySelector('[data-component="tab"]')) initTab();
+  if (document.querySelector('[data-component="modal"]')) initModal();
 });

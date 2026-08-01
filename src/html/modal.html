@@ -12,50 +12,109 @@
     <div class="container">
       <h1>Modal Component</h1>
       <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Necessitatibus
-        est officia odit cum, neque consequuntur. Temporibus, tenetur nulla nisi
-        sint, recusandae vitae exercitationem obcaecati ipsa officia at facilis,
-        ipsam rem.
+        A modal dialog takes over the page: while it is open, nothing behind it
+        can be clicked, tabbed to, or read by a screen reader. That is what
+        separates it from a panel that merely sits on top of the page, and it is
+        the part that is easy to get wrong by hand.
       </p>
-      <button class="open-modal-btn" id="open-modal-btn">Open Modal</button>
-
-      <div
-        class="dialog"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="dialog-label"
+      <p>
+        This one is a native <code>&lt;dialog&gt;</code> opened with
+        <code>showModal()</code>, so the browser supplies most of the hard
+        parts: <kbd>Esc</kbd> closes it, the rest of the page goes inert, and
+        focus returns to this button afterwards. Only the click outside the
+        panel and the <kbd>Tab</kbd> wrap are scripted.
+      </p>
+      <button
+        type="button"
+        class="open-modal-btn"
+        aria-haspopup="dialog"
+        data-open-modal="site-modal"
       >
-        <div class="dialoge-bg" aria-hidden="true"></div>
-        <div class="dialog-panel">
+        Open Modal
+      </button>
+
+      <!-- No role or aria-modal here: <dialog> carries the dialog role, and
+           showModal() supplies the modality. Spelling either one out again is
+           redundant at best. -->
+      <dialog class="modal" id="site-modal" aria-labelledby="modal-title">
+        <div class="modal-panel">
           <button
-            aria-label="close modal"
-            id="first-focusable-elem"
-            class="close-modal-btn first-focusable-elem"
+            type="button"
+            class="modal-close"
+            aria-label="Close dialog"
+            data-close-modal
+            autofocus
           >
             X
           </button>
-          <div class="dialog-panel-body">
-            <h2 id="dialog-label">Modal</h2>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem,
-              eaque?
-            </p>
-            <ul>
-              <li><a href="https://google.com">Google</a></li>
-              <li><a href="https://cnbc.com">CNBC</a></li>
-              <li><a href="https://netflix.com">Netflix</a></li>
-              <li><a href="https://amazon.com">Amazon</a></li>
-            </ul>
-            <button
-              aria-label="close modal"
-              id="last-focusable-elem"
-              class="close-modal-btn"
-            >
-              Close
-            </button>
-          </div>
+          <h2 id="modal-title">You are inside the dialog</h2>
+          <p>
+            Press <kbd>Tab</kbd> on the last button and focus comes straight
+            back to the close button above; <kbd>Shift</kbd> + <kbd>Tab</kbd> on
+            that one sends it to the last. The cycle never leaves this dialog,
+            and never reaches the page behind.
+          </p>
+          <p>
+            Only half of that is the browser's doing.
+            <code>showModal()</code> makes the rest of the page inert, which is
+            what keeps the content behind out of reach — but it lets
+            <kbd>Tab</kbd> pass through the browser's own toolbar on the way
+            round. The wrap is scripted.
+          </p>
+          <!-- These open in a new tab on purpose: following one from inside a
+               dialog would throw away the state the reader opened it to see,
+               and Back would return them to a page with the dialog shut. The
+               glyph and the visually hidden text are the price of that — a new
+               tab that arrives unannounced is its own accessibility problem. -->
+          <ul role="list">
+            <li>
+              <a
+                href="https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/"
+                target="_blank"
+                rel="noopener"
+              >
+                APG dialog pattern
+                <span aria-hidden="true">&#8599;</span>
+                <span class="visually-hidden">(opens in a new tab)</span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog"
+                target="_blank"
+                rel="noopener"
+              >
+                MDN: &lt;dialog&gt;
+                <span aria-hidden="true">&#8599;</span>
+                <span class="visually-hidden">(opens in a new tab)</span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::backdrop"
+                target="_blank"
+                rel="noopener"
+              >
+                MDN: ::backdrop
+                <span aria-hidden="true">&#8599;</span>
+                <span class="visually-hidden">(opens in a new tab)</span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://www.scottohara.me/blog/2023/01/26/use-the-dialog-element.html"
+                target="_blank"
+                rel="noopener"
+              >
+                Use the dialog element
+                <span aria-hidden="true">&#8599;</span>
+                <span class="visually-hidden">(opens in a new tab)</span>
+              </a>
+            </li>
+          </ul>
+          <button type="button" data-close-modal>Close</button>
         </div>
-      </div>
+      </dialog>
     </div>
     <script src="scripts/app.js"></script>
   </body>
