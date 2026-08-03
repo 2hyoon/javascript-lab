@@ -204,6 +204,68 @@ describe('initScroll — loading', () => {
     expect(list().querySelector('h2').textContent).toBe('Title 1');
   });
 
+  it('gives the decorative image an empty alt', async () => {
+    mountScroll();
+    observer().trigger(true);
+    respondWith(fetchMock.calls[0], makePosts(1));
+    await settle();
+
+    const img = list().querySelector('img');
+    expect(img.getAttribute('alt')).toBe('');
+  });
+
+  // Seeding from the post id rather than a random number is what keeps one
+  // post pinned to one picture, so both halves are worth holding: distinct
+  // per post, and identical for the same post across renders.
+  it('seeds each image from the post id', async () => {
+    mountScroll();
+    observer().trigger(true);
+    respondWith(fetchMock.calls[0], makePosts(3));
+    await settle();
+
+    const sources = [...list().querySelectorAll('img')].map((img) => img.src);
+    expect(sources).toEqual([
+      'https://picsum.photos/seed/1/600/400',
+      'https://picsum.photos/seed/2/600/400',
+      'https://picsum.photos/seed/3/600/400',
+    ]);
+    expect(new Set(sources).size).toBe(3);
+  });
+
+  // The response comes from a third-party API, so it is untrusted input. Note
+  // the payloads: a bare <script> would pass even against innerHTML, because
+  // the parser marks scripts inserted that way as already-started and never
+  // runs them. The handler attributes below are the ones that actually fire,
+  // so those are what the assertion has to be built from.
+  it('renders post text as text, never as markup', async () => {
+    const hostile = [
+      {
+        id: 1,
+        title: '<img src=x onerror="window.__xss = true">',
+        body: '<svg onload="window.__xss = true"></svg>',
+      },
+    ];
+
+    mountScroll();
+    observer().trigger(true);
+    respondWith(fetchMock.calls[0], hostile);
+    await settle();
+
+    const heading = list().querySelector('h2');
+    const paragraph = list().querySelector('p');
+
+    // The payload survives intact as text — nothing is stripped or mangled.
+    expect(heading.textContent).toBe(hostile[0].title);
+    expect(paragraph.textContent).toBe(hostile[0].body);
+
+    // …and none of it became an element.
+    expect(heading.children).toHaveLength(0);
+    expect(paragraph.children).toHaveLength(0);
+    expect(list().querySelectorAll('img')).toHaveLength(1); // the decorative one
+    expect(list().querySelector('svg')).toBeNull();
+    expect(list().querySelector('[onerror]')).toBeNull();
+  });
+
   it('asks for the next page on the following intersection', async () => {
     mountScroll();
 

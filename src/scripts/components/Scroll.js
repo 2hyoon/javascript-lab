@@ -7,14 +7,59 @@ const observerOptions = {
   threshold: 0.5,
 };
 
+// KEPT FOR COMPARISON — not a switch to flip back, and not dead code waiting
+// to be revived. This is the version this component shipped with, left here
+// because the difference between it and the one below is the whole point.
+//
+// `insertAdjacentHTML` hands the string to the HTML parser, so a `<` inside
+// post.title is markup, not text. The source is a third-party API response,
+// which makes this a DOM XSS sink even though nothing exploits it today.
+// A `<script>` inserted this way does *not* run — which is exactly why the
+// obvious payload makes the code look safe — but `<img src=x onerror=…>` and
+// `<svg onload=…>` do.
+//
+// function renderPosts(list, posts) {
+//   posts.forEach((post) => {
+//     const li = document.createElement('li');
+//     li.insertAdjacentHTML(
+//       'afterbegin',
+//       `<div class="post-container"><img src="https://picsum.photos/seed/${Math.random() * 1000}/600/400"></div>
+//         <div><h2>${post.title}</h2><p>${post.body}</p></div>`
+//     );
+//     list.append(li);
+//   });
+// }
+
+// Building the nodes directly keeps the API response away from the parser:
+// textContent cannot produce an element, so there is nothing to escape and
+// nothing to get wrong later. The image is decorative — the post text says
+// everything it says — so it takes an empty alt rather than a description.
 function renderPosts(list, posts) {
   posts.forEach((post) => {
     const li = document.createElement('li');
-    li.insertAdjacentHTML(
-      'afterbegin',
-      `<div class="post-container"><img src="https://picsum.photos/seed/${Math.random() * 1000}/600/400"></div>
-        <div><h2>${post.title}</h2><p>${post.body}</p></div>`
-    );
+
+    const figure = document.createElement('div');
+    figure.className = 'post-container';
+
+    // Seeding from the post id instead of Math.random() * 1000 buys three
+    // things: no float in the URL, no collisions (that range gave 100 posts a
+    // 99.4% chance of at least one repeated image), and a stable picture per
+    // post, so a reload does not reshuffle the feed.
+    const img = document.createElement('img');
+    img.src = `https://picsum.photos/seed/${post.id}/600/400`;
+    img.alt = '';
+    figure.append(img);
+
+    const title = document.createElement('h2');
+    title.textContent = post.title;
+
+    const body = document.createElement('p');
+    body.textContent = post.body;
+
+    const text = document.createElement('div');
+    text.append(title, body);
+
+    li.append(figure, text);
     list.append(li);
   });
 }
