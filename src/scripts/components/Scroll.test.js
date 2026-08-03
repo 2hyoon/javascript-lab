@@ -365,22 +365,59 @@ describe('initScroll — the button', () => {
     expect(items()).toHaveLength(5);
   });
 
-  it('marks the list busy and blocks the button while loading', async () => {
+  it('marks the list busy and the button unavailable while loading', async () => {
     mountScroll();
 
     moreButton().click();
     expect(list().getAttribute('aria-busy')).toBe('true');
-    expect(moreButton().disabled).toBe(true);
+    expect(moreButton().getAttribute('aria-disabled')).toBe('true');
     expect(status().textContent).toBe('Loading more posts…');
 
     respondWith(fetchMock.calls[0], makePosts(5));
     await settle();
 
     expect(list().getAttribute('aria-busy')).toBe('false');
-    expect(moreButton().disabled).toBe(false);
+    expect(moreButton().getAttribute('aria-disabled')).toBe('false');
     // The posts speak for themselves, so the region falls silent rather than
     // announcing a count on every scroll.
     expect(status().textContent).toBe('');
+  });
+
+  // aria-disabled keeps the button focusable, which means it also keeps it
+  // clickable -- the guard in loadPosts is now the only thing stopping a
+  // second request, so it is worth asserting through this path too.
+  it('ignores presses that land while a request is open', async () => {
+    mountScroll();
+
+    moreButton().click();
+    moreButton().click();
+    moreButton().click();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    respondWith(fetchMock.calls[0], makePosts(5));
+    await settle();
+
+    expect(items()).toHaveLength(5);
+  });
+
+  // Pressing the button must not cost the reader their place in the page.
+  // The activeElement assertions alone would not catch a regression here --
+  // jsdom does not blur a focused element when it is disabled, so they hold
+  // either way. The property assertion is the one with teeth: setting
+  // .disabled is what moves focus to the body in a real browser.
+  it('keeps focus on the button across a load', async () => {
+    mountScroll();
+
+    moreButton().focus();
+    moreButton().click();
+    expect(moreButton().disabled).toBe(false);
+    expect(document.activeElement).toBe(moreButton());
+
+    respondWith(fetchMock.calls[0], makePosts(5));
+    await settle();
+
+    expect(moreButton().disabled).toBe(false);
+    expect(document.activeElement).toBe(moreButton());
   });
 
   it('comes back after a failed load so the reader can retry', async () => {
@@ -391,7 +428,7 @@ describe('initScroll — the button', () => {
     await settle();
 
     expect(status().textContent).toBe('Could not load more posts.');
-    expect(moreButton().disabled).toBe(false);
+    expect(moreButton().getAttribute('aria-disabled')).toBe('false');
     expect(moreButton().hidden).toBe(false);
 
     moreButton().click();

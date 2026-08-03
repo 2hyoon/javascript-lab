@@ -99,12 +99,16 @@ export function initScroll(root = document) {
     let observer;
 
     // aria-busy is the part a screen reader acts on — it marks the list as
-    // mid-update so its contents are not announced half-written. The status
-    // region carries the same fact in words, and disabling the button stops a
-    // second request the guard would only have to throw away.
+    // mid-update so its contents are not announced half-written.
+    //
+    // The button is marked aria-disabled rather than disabled, because a
+    // disabled element cannot hold focus: pressing Enter would drop the
+    // reader onto the body and leave them tabbing from the top of the page
+    // to get back. It still reads as unavailable, and the guard in loadPosts
+    // already ignores the press it no longer blocks.
     function setLoading(busy) {
       list.setAttribute('aria-busy', busy ? 'true' : 'false');
-      moreButton.disabled = busy;
+      moreButton.setAttribute('aria-disabled', busy ? 'true' : 'false');
     }
 
     async function loadPosts() {

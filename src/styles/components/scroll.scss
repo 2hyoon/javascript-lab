@@ -45,12 +45,17 @@
     display: block;
   }
 
+  // The region is empty most of the time, so it reserves the one line it
+  // will need. Without that, every load pushed the button 16.6px down as the
+  // text appeared and pulled it back up as it cleared.
   .scroll-status {
     width: 100%;
+    min-height: calc(1rem + 1.25em);
     margin: 0;
     padding: 0.5rem 2rem;
     font-size: 0.9rem;
     font-weight: bold;
+    line-height: 1.25;
     text-align: center;
     text-transform: uppercase;
   }
@@ -81,7 +86,9 @@
       display: none;
     }
 
-    &:disabled {
+    // aria-disabled, not :disabled -- the script marks the button that way so
+    // it can keep focus while a request is open.
+    &[aria-disabled='true'] {
       color: #4a4a4a;
       background-color: #c4c4c4;
       cursor: default;
