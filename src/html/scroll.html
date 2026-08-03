@@ -12,8 +12,18 @@
     <div class="container">
       <h1>Infinite Scroll</h1>
       <div class="scroll-feed">
-        <ul class="post-list"></ul>
-        <div class="sentinel">Loading...</div>
+        <ul class="post-list" aria-busy="false"></ul>
+        <p class="scroll-status" role="status" aria-live="polite"></p>
+        <!-- This button is what the observer watches, so scrolling to it and
+             pressing it are the same action. It stays hidden until the script
+             claims the feed, and it is also the retry after a failed load. -->
+        <button type="button" class="scroll-more">Load more posts</button>
+        <noscript>
+          <p class="scroll-noscript">
+            This demo fetches its posts with JavaScript, so there is nothing to
+            list while it is turned off.
+          </p>
+        </noscript>
       </div>
     </div>
     <script src="scripts/app.js"></script>

@@ -30,7 +30,6 @@
     background-color: #d1d1d1;
     padding: 1rem;
     margin: 0;
-    box-sizing: border-box;
   }
 
   .post-container {
@@ -46,14 +45,55 @@
     display: block;
   }
 
-  .sentinel {
+  .scroll-status {
     width: 100%;
-    font-size: 0.9rem;
-    // background-color: rgba(220, 248, 118, 0.3);
+    margin: 0;
     padding: 0.5rem 2rem;
-    text-transform: uppercase;
+    font-size: 0.9rem;
     font-weight: bold;
-    box-sizing: border-box;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  // A control that cannot do anything yet is worse than no control, so the
+  // button waits for the script to claim the feed. Without JS the noscript
+  // note explains the empty list instead.
+  .scroll-feed:not([data-enhanced='true']) .scroll-more {
+    display: none;
+  }
+
+  // Both colours are set on purpose: a button given only a background falls
+  // back to the browser's buttontext for the label.
+  .scroll-more {
+    display: block;
+    margin: 0 auto 2rem;
+    padding: 0.6rem 1.4rem;
+    border: 0;
+    font: inherit;
+    color: #fff;
+    background-color: #1a1a1a;
+    cursor: pointer;
+
+    // `display: block` above outranks the user agent's `[hidden]` rule, so
+    // the attribute the script sets when the feed runs out would otherwise
+    // do nothing at all.
+    &[hidden] {
+      display: none;
+    }
+
+    &:disabled {
+      color: #4a4a4a;
+      background-color: #c4c4c4;
+      cursor: default;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #1a73e8;
+      outline-offset: 2px;
+    }
+  }
+
+  .scroll-noscript {
     text-align: center;
   }
 }

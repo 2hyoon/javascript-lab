@@ -3,7 +3,9 @@ const PAGE_SIZE = 5;
 
 const observerOptions = {
   root: null,
-  rootMargin: '0px',
+  // Reaching for the next page 200px early means the request is usually in
+  // flight before the reader arrives at the end of what they have.
+  rootMargin: '200px',
   threshold: 0.5,
 };
 
@@ -45,9 +47,15 @@ function renderPosts(list, posts) {
     // things: no float in the URL, no collisions (that range gave 100 posts a
     // 99.4% chance of at least one repeated image), and a stable picture per
     // post, so a reload does not reshuffle the feed.
+    // Lazy is right here and wrong in the carousel: a post further down the
+    // feed arrives by scrolling and may never be reached, which is exactly
+    // the case the attribute was made for.
     const img = document.createElement('img');
     img.src = `https://picsum.photos/seed/${post.id}/600/400`;
     img.alt = '';
+    // setAttribute rather than img.loading, which jsdom does not reflect onto
+    // the attribute — the test would then assert a property no browser reads.
+    img.setAttribute('loading', 'lazy');
     figure.append(img);
 
     const title = document.createElement('h2');
@@ -79,8 +87,9 @@ export function initScroll(root = document) {
     if (feedEl.dataset.enhanced === 'true') return;
 
     const list = feedEl.querySelector('.post-list');
-    const sentinel = feedEl.querySelector('.sentinel');
-    if (!list || !sentinel) return;
+    const status = feedEl.querySelector('.scroll-status');
+    const moreButton = feedEl.querySelector('.scroll-more');
+    if (!list || !status || !moreButton) return;
 
     feedEl.dataset.enhanced = 'true';
 
@@ -89,12 +98,23 @@ export function initScroll(root = document) {
     let finished = false;
     let observer;
 
+    // aria-busy is the part a screen reader acts on — it marks the list as
+    // mid-update so its contents are not announced half-written. The status
+    // region carries the same fact in words, and disabling the button stops a
+    // second request the guard would only have to throw away.
+    function setLoading(busy) {
+      list.setAttribute('aria-busy', busy ? 'true' : 'false');
+      moreButton.disabled = busy;
+    }
+
     async function loadPosts() {
       // Without this guard two overlapping calls both read the same `page` —
       // the increment only happens once the response is in — and the same five
       // posts get appended twice.
       if (loading || finished) return;
       loading = true;
+      setLoading(true);
+      status.textContent = 'Loading more posts…';
 
       try {
         const url = `${API_URL}?_page=${page}&_limit=${PAGE_SIZE}`;
@@ -105,38 +125,54 @@ export function initScroll(root = document) {
         if (posts.length === 0) {
           finished = true;
           observer.disconnect();
-          sentinel.textContent = '더 이상 게시글 없음';
+          moreButton.hidden = true;
+          status.textContent = 'No more posts.';
           return;
         }
 
         renderPosts(list, posts);
         page += 1;
+        // The posts themselves are the announcement here, so the region goes
+        // quiet. Only the two endings a reader cannot discover by scrolling
+        // further — nothing left, or nothing arrived — keep their wording.
+        status.textContent = '';
       } catch (error) {
         // The cleanup function aborts in-flight requests, so this rejection is
         // the component being torn down, not a failure worth reporting.
         if (error.name === 'AbortError') return;
-        sentinel.textContent = '게시글을 불러오지 못함';
+        status.textContent = 'Could not load more posts.';
         return;
       } finally {
         loading = false;
+        setLoading(false);
       }
 
       // The observer only fires when the intersection *changes*, so if the
-      // posts just appended did not push the sentinel back off screen no
-      // second event is coming and the feed stalls with its trigger still in
-      // view. Re-observing re-delivers the *current* state rather than a
-      // change, which either restarts the loop or reports the sentinel gone.
-      // The error path returns before this on purpose: a failure that retried
-      // itself here would spin.
-      observer.unobserve(sentinel);
-      observer.observe(sentinel);
+      // posts just appended did not push the button back off screen no second
+      // event is coming and the feed stalls with its trigger still in view.
+      // Re-observing re-delivers the *current* state rather than a change,
+      // which either restarts the loop or reports the button as gone. The
+      // error path returns before this on purpose: a failure that retried
+      // itself here would spin. Pressing the button is the retry instead.
+      observer.unobserve(moreButton);
+      observer.observe(moreButton);
     }
+
+    feedEl.addEventListener(
+      'click',
+      (event) => {
+        const button = event.target.closest('.scroll-more');
+        if (!button || !feedEl.contains(button)) return;
+        loadPosts();
+      },
+      { signal }
+    );
 
     observer = new IntersectionObserver((entries) => {
       if (entries[entries.length - 1].isIntersecting) loadPosts();
     }, observerOptions);
 
-    observer.observe(sentinel);
+    observer.observe(moreButton);
     observers.push(observer);
   });
 

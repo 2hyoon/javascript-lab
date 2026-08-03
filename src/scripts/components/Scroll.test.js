@@ -97,13 +97,15 @@ const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 const markup = () => `
   <div class="scroll-feed">
-    <ul class="post-list"></ul>
-    <div class="sentinel">Loading...</div>
+    <ul class="post-list" aria-busy="false"></ul>
+    <p class="scroll-status" role="status" aria-live="polite"></p>
+    <button type="button" class="scroll-more">Load more posts</button>
   </div>`;
 
 const feed = () => document.querySelector('.scroll-feed');
 const list = () => document.querySelector('.post-list');
-const sentinel = () => document.querySelector('.sentinel');
+const status = () => document.querySelector('.scroll-status');
+const moreButton = () => document.querySelector('.scroll-more');
 const items = () => [...document.querySelectorAll('.post-list li')];
 const observer = () => observers[0];
 
@@ -140,15 +142,15 @@ describe('initScroll — wiring', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('marks the feed enhanced and observes the sentinel', () => {
+  it('marks the feed enhanced and observes the button', () => {
     mountScroll();
 
     expect(feed().dataset.enhanced).toBe('true');
     expect(observers).toHaveLength(1);
-    expect(observer().targets).toEqual([sentinel()]);
+    expect(observer().targets).toEqual([moreButton()]);
   });
 
-  it('leaves a feed without a list or sentinel alone', () => {
+  it('leaves a feed missing any of its parts alone', () => {
     document.body.innerHTML = '<div class="scroll-feed"></div>';
     cleanup = initScroll();
 
@@ -182,14 +184,14 @@ describe('initScroll — wiring', () => {
 });
 
 describe('initScroll — loading', () => {
-  it('stays idle while the sentinel is out of view', () => {
+  it('stays idle while the button is out of view', () => {
     mountScroll();
     observer().trigger(false);
 
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('loads the first page when the sentinel comes into view', async () => {
+  it('loads the first page when the button comes into view', async () => {
     mountScroll();
     observer().trigger(true);
 
@@ -204,7 +206,11 @@ describe('initScroll — loading', () => {
     expect(list().querySelector('h2').textContent).toBe('Title 1');
   });
 
-  it('gives the decorative image an empty alt', async () => {
+  // Empty alt because the post text beside it says everything the picture
+  // says; lazy because a post further down the feed may never be reached,
+  // which is the case the attribute exists for and the opposite of the
+  // carousel, where every slide is about to be shown.
+  it('gives the decorative image an empty alt and a lazy load', async () => {
     mountScroll();
     observer().trigger(true);
     respondWith(fetchMock.calls[0], makePosts(1));
@@ -212,6 +218,7 @@ describe('initScroll — loading', () => {
 
     const img = list().querySelector('img');
     expect(img.getAttribute('alt')).toBe('');
+    expect(img.getAttribute('loading')).toBe('lazy');
   });
 
   // Seeding from the post id rather than a random number is what keeps one
@@ -304,7 +311,7 @@ describe('initScroll — loading', () => {
   // The guard above cannot stand alone: dropping that second intersection
   // removes the only event that was still coming, so without the re-observe
   // the feed stalls with its trigger sitting on screen.
-  it('re-observes after a load so a still-visible sentinel keeps going', async () => {
+  it('re-observes after a load so a still-visible button keeps going', async () => {
     mountScroll();
     const io = observer();
     const observeCountAfterInit = io.observeCount;
@@ -332,11 +339,70 @@ describe('initScroll — loading', () => {
     respondWith(fetchMock.calls[0], []);
     await settle();
 
-    expect(sentinel().textContent).toBe('더 이상 게시글 없음');
+    expect(status().textContent).toBe('No more posts.');
     expect(observer().disconnected).toBe(true);
+    expect(moreButton().hidden).toBe(true);
 
     observer().trigger(true);
     expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+});
+
+// Scrolling is not the only way to reach the next page, and it is not
+// available to everyone. The button the observer watches is a real control:
+// pressing it loads, and after a failure it is the way back.
+describe('initScroll — the button', () => {
+  it('loads a page when pressed, with no intersection at all', async () => {
+    mountScroll();
+
+    moreButton().click();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock.calls[0].url).toContain('_page=1');
+
+    respondWith(fetchMock.calls[0], makePosts(5));
+    await settle();
+
+    expect(items()).toHaveLength(5);
+  });
+
+  it('marks the list busy and blocks the button while loading', async () => {
+    mountScroll();
+
+    moreButton().click();
+    expect(list().getAttribute('aria-busy')).toBe('true');
+    expect(moreButton().disabled).toBe(true);
+    expect(status().textContent).toBe('Loading more posts…');
+
+    respondWith(fetchMock.calls[0], makePosts(5));
+    await settle();
+
+    expect(list().getAttribute('aria-busy')).toBe('false');
+    expect(moreButton().disabled).toBe(false);
+    // The posts speak for themselves, so the region falls silent rather than
+    // announcing a count on every scroll.
+    expect(status().textContent).toBe('');
+  });
+
+  it('comes back after a failed load so the reader can retry', async () => {
+    mountScroll();
+
+    moreButton().click();
+    fetchMock.calls[0].reject(new TypeError('Failed to fetch'));
+    await settle();
+
+    expect(status().textContent).toBe('Could not load more posts.');
+    expect(moreButton().disabled).toBe(false);
+    expect(moreButton().hidden).toBe(false);
+
+    moreButton().click();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock.calls[1].url).toContain('_page=1');
+
+    respondWith(fetchMock.calls[1], makePosts(5));
+    await settle();
+
+    expect(items()).toHaveLength(5);
+    expect(status().textContent).toBe('');
   });
 });
 
@@ -354,7 +420,7 @@ describe('initScroll — failure', () => {
 
     expect(json).not.toHaveBeenCalled();
     expect(items()).toHaveLength(0);
-    expect(sentinel().textContent).toBe('게시글을 불러오지 못함');
+    expect(status().textContent).toBe('Could not load more posts.');
   });
 
   it('reports a rejected request rather than throwing past the component', async () => {
@@ -364,7 +430,7 @@ describe('initScroll — failure', () => {
     fetchMock.calls[0].reject(new TypeError('Failed to fetch'));
     await settle();
 
-    expect(sentinel().textContent).toBe('게시글을 불러오지 못함');
+    expect(status().textContent).toBe('Could not load more posts.');
   });
 
   it('does not re-observe after a failure, so it cannot spin', async () => {
@@ -381,7 +447,7 @@ describe('initScroll — failure', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
-  it('retries the same page when the sentinel intersects again', async () => {
+  it('retries the same page when the button intersects again', async () => {
     mountScroll();
 
     observer().trigger(true);
@@ -423,7 +489,7 @@ describe('initScroll — cleanup', () => {
     cleanup = null;
     await settle();
 
-    expect(sentinel().textContent).toBe('Loading...');
+    expect(status().textContent).toBe('Loading more posts…');
     expect(items()).toHaveLength(0);
   });
 });
