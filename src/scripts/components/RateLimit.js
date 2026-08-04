@@ -103,7 +103,11 @@ const LANES = [
  *      at 0, 100 and 200" is the clearest definition any of these have.
  * ------------------------------------------------------------------------ */
 
-function debounce(fn, wait) {
+// The four wrappers are exported so the tests can assert their timing
+// directly. Going through the page instead would leave the args contract
+// untestable — the demo passes each wrapper a `fn` that takes none, so
+// "which call's arguments survive" could never be observed from the DOM.
+export function debounce(fn, wait) {
   let timerID = null;
   return (...args) => {
     // No guard needed: clearTimeout(null) is a no-op.
@@ -119,7 +123,7 @@ function debounce(fn, wait) {
 
 // Trailing edge: the first event opens a window, and the call lands when the
 // window closes.
-function throttleTrailing(fn, wait) {
+export function throttleTrailing(fn, wait) {
   let timerID = null;
   let lastArgs;
 
@@ -141,9 +145,12 @@ function throttleTrailing(fn, wait) {
 // Leading edge: fire now, then ignore everything until the window is up.
 // Nothing is scheduled, so there is no timer to clean up — and no trailing
 // call either, which is the trade.
-function throttleLeading(fn, wait) {
-  // Zero rather than null so the first call always passes the check below.
-  let last = 0;
+export function throttleLeading(fn, wait) {
+  // -Infinity, not 0. Zero only passes the check below once performance.now()
+  // has already exceeded `wait`, so with the slider at 1000ms the first event
+  // in the second after page load would be swallowed. The tests caught this:
+  // fake timers start the clock at 0, which is the same situation.
+  let last = -Infinity;
 
   return (...args) => {
     // performance.now() rather than Date.now(): it counts monotonically from
@@ -160,7 +167,7 @@ function throttleLeading(fn, wait) {
 // this is throttleLeading with a frame in place of the window, and trailing
 // args in place of first-event args — the last position inside a frame is the
 // one worth drawing.
-function throttleFrame(fn) {
+export function throttleFrame(fn) {
   let frameID = null;
   let lastArgs;
 
@@ -232,9 +239,11 @@ export function initRateLimit(root = document) {
       countEls[key].textContent = counts[key];
     }
 
-    // Moving the slider builds a fresh set, which drops whatever the old one
-    // had pending. That is the honest behaviour to demo: changing the delay
-    // mid-burst is not a thing any of these functions supports.
+    // Moving the slider builds a fresh set. The old wrappers are dropped, but
+    // anything they had already scheduled is not — the closure holds its own
+    // timer and still fires into `mark`, so a slider move mid-burst produces
+    // one last mark on the old delay. Same missing cancel() as the cleanup
+    // below; fixing one fixes both.
     function rebuild() {
       const wait = Number(waitInput.value);
       waitOutput.textContent = `${wait} ms`;
