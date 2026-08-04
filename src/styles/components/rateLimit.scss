@@ -1,0 +1,145 @@
+[data-component='rateLimit'] {
+  h1 {
+    margin: 1rem 0;
+    font-size: 1.8rem;
+  }
+
+  h2 {
+    margin: 2.5rem 0 0.5rem;
+    font-size: 1.1rem;
+  }
+
+  .rate-limit-intro {
+    max-width: 60ch;
+    margin: 0 0 2rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .rate-limit {
+    background-color: #fff;
+    padding: 1.5rem;
+  }
+
+  // Both colours are set on purpose: a control given only a background falls
+  // back to the browser's buttontext for its label.
+  .rate-limit-pad {
+    display: block;
+    width: 100%;
+    height: 140px;
+    border: 2px dashed #b4b4b4;
+    font: inherit;
+    font-size: 0.9rem;
+    color: #4a4a4a;
+    background-color: #f4f4f4;
+    cursor: crosshair;
+    touch-action: none;
+
+    &:hover {
+      border-color: var(--main-highlight-color);
+    }
+
+    &:focus-visible {
+      outline: 2px solid #1a73e8;
+      outline-offset: 2px;
+    }
+  }
+
+  // The height is fixed because the script divides it into one lane per entry
+  // in LANES; the width is fluid and the canvas resizes its backing store to
+  // match. Five lanes at the ~40px the labels need.
+  .rate-limit-timeline {
+    display: block;
+    width: 100%;
+    height: 235px;
+    margin-top: 1rem;
+  }
+
+  .rate-limit-counts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    list-style-type: none;
+    margin: 0.5rem 0 0;
+    padding: 0;
+    font-size: 0.85rem;
+  }
+
+  .rate-limit-counts li {
+    border-left: 4px solid;
+    padding-left: 0.5rem;
+  }
+
+  // Matching the lane colours in RateLimit.js. Keep the two in step.
+  .rate-limit-counts [data-lane='raw'] {
+    border-left-color: #8a8a8a;
+  }
+
+  .rate-limit-counts [data-lane='debounced'] {
+    border-left-color: rgb(25, 64, 239);
+  }
+
+  .rate-limit-counts [data-lane='throttledTrailing'] {
+    border-left-color: #e5601f;
+  }
+
+  .rate-limit-counts [data-lane='throttledLeading'] {
+    border-left-color: #1f8a4c;
+  }
+
+  .rate-limit-counts [data-lane='throttledFrame'] {
+    border-left-color: #7b3fa0;
+  }
+
+  .rate-limit-count {
+    font-weight: bold;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .rate-limit-controls {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    font-size: 0.85rem;
+  }
+
+  .rate-limit-wait {
+    flex: 1 1 200px;
+    max-width: 300px;
+  }
+
+  .rate-limit-wait-value {
+    min-width: 5rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .rate-limit-reset {
+    margin-left: auto;
+    padding: 0.4rem 1rem;
+    border: 0;
+    font: inherit;
+    font-size: 0.85rem;
+    color: #fff;
+    background-color: #1a1a1a;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid #1a73e8;
+      outline-offset: 2px;
+    }
+  }
+
+  .rate-limit-notes {
+    max-width: 60ch;
+    margin: 0;
+    padding-left: 1.2rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .rate-limit-notes li {
+    margin-bottom: 0.5rem;
+  }
+}

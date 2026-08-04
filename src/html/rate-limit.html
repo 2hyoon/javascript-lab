@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Debounce vs Throttle</title>
+    <link rel="icon" type="image/png" href="/images/favicon.png" />
+    <link rel="stylesheet" href="styles/app.css" />
+  </head>
+  <body data-component="rateLimit">
+    <%= require('./partials/header.html') %>
+    <div class="container">
+      <h1>Debounce vs Throttle</h1>
+      <p class="rate-limit-intro">
+        Both cut a stream of events down to fewer calls, which is where the
+        confusion starts &mdash; the shapes they produce have nothing in common.
+        Move the pointer across the pad, or hold a key while it has focus, and
+        watch the lanes fill in.
+      </p>
+
+      <div class="rate-limit">
+        <!-- A button rather than a div with tabindex, so it is announced and
+             reachable. Holding a key on a focused button auto-repeats, which
+             is a real event stream and the reason the demo works without a
+             pointer. Nothing listens for the click. -->
+        <button type="button" class="rate-limit-pad">
+          Move the pointer here, or hold any key
+        </button>
+
+        <!-- The picture is the whole point for a sighted reader and noise for
+             everyone else, so the canvas is hidden and the counts below carry
+             the same information as text. -->
+        <canvas class="rate-limit-timeline" aria-hidden="true"></canvas>
+
+        <!-- Deliberately not a live region: these change up to 60 times a
+             second while the pointer moves, which would flood a screen reader
+             rather than inform it. They are here to be read on demand. -->
+        <ul class="rate-limit-counts">
+          <li data-lane="raw"><span class="rate-limit-count">0</span> raw</li>
+          <li data-lane="debounced">
+            <span class="rate-limit-count">0</span> debounce
+          </li>
+          <li data-lane="throttledTrailing">
+            <span class="rate-limit-count">0</span> throttle &middot; trailing
+          </li>
+          <li data-lane="throttledLeading">
+            <span class="rate-limit-count">0</span> throttle &middot; leading
+          </li>
+          <li data-lane="throttledFrame">
+            <span class="rate-limit-count">0</span> requestAnimationFrame
+          </li>
+        </ul>
+
+        <div class="rate-limit-controls">
+          <label for="rate-limit-wait">wait</label>
+          <input
+            type="range"
+            id="rate-limit-wait"
+            class="rate-limit-wait"
+            min="50"
+            max="1000"
+            step="50"
+            value="300"
+          />
+          <output class="rate-limit-wait-value" for="rate-limit-wait"
+            >300 ms</output
+          >
+          <button type="button" class="rate-limit-reset">Reset</button>
+        </div>
+      </div>
+
+      <h2>What to look for</h2>
+      <ul class="rate-limit-notes">
+        <li>
+          Keep moving without stopping. The <strong>debounce</strong> lane stays
+          empty the whole time &mdash; it is waiting for you to stop. Both
+          <strong>throttle</strong> lanes keep firing at a steady beat.
+        </li>
+        <li>
+          Now stop. One debounce mark appears, <code>wait</code> ms after your
+          last event. That is the entire difference between the two ideas.
+        </li>
+        <li>
+          Move the pointer <em>once</em>, then leave it alone.
+          <strong>leading</strong> fires instantly;
+          <strong>trailing</strong> fires <code>wait</code> ms later, landing on
+          top of the debounce mark. A single isolated event cannot tell trailing
+          throttle and debounce apart.
+        </li>
+        <li>
+          Start a burst and watch the front edge.
+          <strong>leading</strong> marks the very first event;
+          <strong>trailing</strong> is one full <code>wait</code> behind it for
+          the whole run. At the back edge they swap: trailing lands a final mark
+          after you stop, leading does not.
+        </li>
+        <li>
+          The gridlines are one second apart, so you can count either throttle
+          interval against them and check it matches <code>wait</code>.
+        </li>
+        <li>
+          Now drag the <code>wait</code> slider while moving. Every lane changes
+          its spacing except <strong>requestAnimationFrame</strong> &mdash; that
+          one is not on your clock, it is on the display's. Count its marks
+          between two gridlines and you have read your refresh rate: 60 on most
+          screens, 120 on ProMotion.
+        </li>
+      </ul>
+    </div>
+    <script src="scripts/app.js"></script>
+  </body>
+</html>
