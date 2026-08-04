@@ -29,13 +29,15 @@ CI (`.github/workflows/ci.yml`) runs `lint`, `test`, and `prod` on Node 22 for *
 Two shapes exist, and the repo is mid-migration between them:
 
 ```js
-// Older shape (11 of 14 components): the file starts itself on import.
+// Older shape (8 of 13 components): the file starts itself on import.
 document.addEventListener('DOMContentLoaded', () => {
   if (!document.querySelector('[data-component="counter"]')) return;
   // ...
 });
 
-// Newer shape (Accordion, Tab, Modal): export an init, wire it in app.js.
+// Newer shape (Accordion, Tab, Modal, Carousel, Scroll): export an init and
+// wire it in app.js. Carousel and Scroll also return a cleanup that stops
+// their timer / aborts their in-flight request, not just the listeners.
 export function initAccordion(root = document) {
   root.querySelectorAll('.accordion').forEach((el) => {
     if (el.dataset.enhanced === 'true') return; // idempotent
@@ -55,10 +57,11 @@ Prefer the newer shape for anything you touch. Importing a module should not hav
 3. `src/styles/components/<name>.scss` (camelCase) + an `@use` line in `src/styles/app.scss`
 4. a `<li><a>` entry in `src/html/index.html`
 
-**Testing:** Vitest with a `jsdom` environment (`vitest.config.mjs`, collecting `src/scripts/**/*.test.js`). Tests sit next to the component as `<Name>.test.js`. `Accordion.js`, `Tab.js` and `Modal.js` are covered. Three things bite when writing more:
+**Testing:** Vitest with a `jsdom` environment (`vitest.config.mjs`, collecting `src/scripts/**/*.test.js`). Tests sit next to the component as `<Name>.test.js`. `Accordion.js`, `Tab.js`, `Modal.js`, `Carousel.js` and `Scroll.js` are covered. Four things bite when writing more:
 
 - A component in the older shape exports nothing and subscribes to `DOMContentLoaded` at import time. `vi.resetModules()` clears the module cache but *not* the listeners already on `document`, so dispatching the event re-runs every previously imported copy against the current DOM — a toggle then fires once per past test, and only the even-numbered ones look broken. The `mount` helper in `src/scripts/testUtils.js` works around it by spying on `document.addEventListener` during the import and calling the captured callback directly; `Tab.test.js` still needs it. A component in the newer shape needs none of this: set `document.body.innerHTML`, call the exported init, assert (see `Accordion.test.js`).
 - jsdom has no layout, so `scrollHeight` / `offsetWidth` and everything derived from them are always 0. Assert on ARIA state and attributes instead. Anything genuinely about size — that a panel grows when the viewport narrows, say — needs a real browser, not this test suite.
+- jsdom has no `IntersectionObserver` and no usable `fetch`, so `Scroll.test.js` replaces both. Treat that as the point rather than a workaround: a fake observer can be told to fire twice while a request is still open, and a fetch stub built on deferred promises holds the response until the assertion has run. The gap between "request sent" and "response in" is where the concurrency contracts live, and neither real API lets you stop time there. The fake observer also models one spec detail the component depends on — `observe()` re-delivers the current intersection state — because the component re-observes after each load to avoid stalling when appended posts fail to push the sentinel off screen.
 - jsdom's `HTMLDialogElement` carries nothing but `open` — no `showModal`, no `close`, no top layer. `Modal.test.js` stubs those two methods onto the prototype so the wiring can run at all, which means the platform half of the component (Esc, the inert background, focus restoration) is deliberately untested. The Tab cycle is scripted rather than native — `showModal()` lets Tab walk through the browser's toolbar, which the APG pattern and audits against it do not accept — so that part *is* covered. Assert on call counts rather than on the `open` attribute when the thing under test is double-binding: a second `showModal()` throws but event dispatch swallows it, and a second `close()` is a no-op, so the attribute looks correct either way.
 
 **Styles:** SCSS → postcss (autoprefixer only) → extracted CSS. All of it is hand-written; there is no utility framework. The reset is `base/reset.scss` (vendored normalize.css v8, left untouched) plus one project-owned rule at the top of `base/site.scss`: `box-sizing: border-box` on everything. Normalize does not set that and several components (`.aclock`, the calculator, fieldsets) size themselves assuming it.
