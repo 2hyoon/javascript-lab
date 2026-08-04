@@ -12,27 +12,37 @@
     <div class="container">
       <section class="todo">
         <h1>To Do List</h1>
-        <div class="todo-form">
+
+        <form class="todo-form">
+          <label class="visually-hidden" for="todo-input">New task</label>
           <input
             type="text"
             id="todo-input"
             class="todo-input"
             placeholder="Add a task"
+            autocomplete="off"
           />
-          <button class="todo-add-btn">Add Task</button>
+          <button type="submit" class="todo-add-btn">Add Task</button>
+        </form>
+
+        <div class="todo-panel">
+          <h2>To do</h2>
+          <p class="todo-count"></p>
+          <p class="todo-empty todo-empty-active">Your list is empty.</p>
+          <ul class="todo-list todo-list-active"></ul>
         </div>
-        <div class="todo-all">
-          <h2>To Do List</h2>
-          <p class="todo-indicator">Your list is empty.</p>
-          <ul id="todo-list" class="todo-list"></ul>
+
+        <div class="todo-panel">
+          <h2>Completed</h2>
+          <p class="todo-empty todo-empty-done">Nothing completed yet.</p>
+          <ul class="todo-list todo-list-done"></ul>
         </div>
-        <div class="todo-completed">
-          <h2>Completed List</h2>
-          <ul
-            id="todo-completed-list"
-            class="todo-list todo-completed-list"
-          ></ul>
-        </div>
+
+        <p
+          class="todo-status visually-hidden"
+          role="status"
+          aria-live="polite"
+        ></p>
       </section>
     </div>
 
