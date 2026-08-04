@@ -1,3 +1,12 @@
+// Focus rings have to clear 3:1 against whatever sits behind them (WCAG
+// 1.4.11), and these controls sit on two different greys — #444 inside a
+// panel, #222 on the card. This blue measures 5.25:1 and 8.57:1, so one
+// value covers both. The old #3c86f5 managed 2.75:1 on #444 and was the
+// only focus indicator, because `outline: none` had removed the native one.
+$todo-focus: #8ec2ff;
+$todo-card: #222;
+$todo-panel: #444;
+
 [data-component='todo-list'] .container {
   display: flex;
   justify-content: center;
@@ -6,43 +15,44 @@
     color: #eee;
   }
 
-  h2,
+  // Only the colour is set here. Preflight used to flatten headings to
+  // `font-size: inherit`, and the 0.9rem that replaced it left h2 smaller
+  // than the body text it introduced; browser defaults are the hierarchy.
+  h2 {
+    color: #fff;
+  }
+
   p {
     color: #fff;
-    font-size: 0.9rem;
-    font-weight: 400;
-    padding: 0;
     margin: 0;
   }
 }
 
 .todo {
-  background-color: #222;
-  box-sizing: border-box;
+  background-color: $todo-card;
   padding: 1rem;
   max-width: 600px;
   width: 100%;
 }
 
 .todo-form {
-  background-color: #444;
+  background-color: $todo-panel;
   padding: 1rem;
   border-radius: 6px;
-  box-sizing: border-box;
   display: flex;
-  justify-content: space-between;
+  gap: 1rem;
   margin-bottom: 1rem;
 }
 
 .todo-input {
+  // The width used to be `calc(100% - 150px)` against a 100px button, so the
+  // arithmetic was already wrong. Flex measures the button for us.
+  flex: 1;
+  min-width: 0;
   padding: 0.75rem 1rem;
-  width: calc(100% - 150px);
   border: 0;
   border-radius: 3px;
-
-  // Tailwind's preflight makes form controls transparent and lets them
-  // inherit their colour, which left dark text sitting on the dark form.
-  background-color: #222;
+  background-color: $todo-card;
   color: #eee;
 
   &::placeholder {
@@ -56,35 +66,47 @@
   color: #fff;
   border-radius: 3px;
   padding: 0.75rem 1rem;
-  width: 100px;
 
   &:hover {
     background-color: #184a7b;
   }
 }
 
-.todo-all {
-  list-style-type: none;
-  background-color: #444;
+.todo-panel {
+  background-color: $todo-panel;
   padding: 2rem 1rem;
   border-radius: 3px;
   margin-bottom: 1rem;
+}
 
-  p {
-    text-align: center;
-    margin-top: 1rem;
-  }
+// These two swap in and out of the same slot, so they have to occupy the
+// same amount of it. Leaving the empty message at the default 1rem against
+// the count's 0.9rem moved everything below by 1.84px on every transition
+// between an empty list and a populated one.
+.todo-count,
+.todo-empty {
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
 
-  p.off {
-    display: none;
-  }
+// Left-aligned rather than centred so it reads as the same line the count
+// occupies, not as a second, unrelated column.
+.todo-empty {
+  color: #ccc;
+}
+
+// The empty-state paragraphs are toggled through the `hidden` property. Any
+// `display` on them would outrank the user agent's `[hidden]` rule and pin
+// them open — the same cascade problem the infinite-scroll button hit, and
+// one no unit test catches, because jsdom has no cascade.
+.todo [hidden] {
+  display: none;
 }
 
 .todo-list {
   padding: 0;
   margin: 1rem 0 0;
   list-style-type: none;
-  box-sizing: border-box;
 }
 
 .todo-list li {
@@ -94,24 +116,32 @@
   margin-bottom: 1rem;
 }
 
-.todo-list input[type='text'] {
-  flex-grow: 1;
-  box-sizing: border-box;
+// At rest the field is indistinguishable from the panel behind it, which
+// reads as plain text and hides the fact that a task can be renamed in
+// place. The border only appears on hover and focus, so the list stays quiet
+// while the affordance is still there when a pointer arrives. Background and
+// colour are both set: a control given one and not the other falls back to
+// the browser's black `buttontext` and disappears on these dark panels.
+.todo-list-input {
+  flex: 1;
+  min-width: 0;
   padding: 0.7rem 1rem 0.7rem 0.5rem;
   border-radius: 3px;
-  border: 2px solid #444;
-  outline: none;
-  background-color: #444;
+  border: 2px solid $todo-panel;
+  background-color: $todo-panel;
   color: #fff;
 
-  &:focus-visible,
+  &:hover {
+    border-color: #6b6b6b;
+  }
+
   &:focus {
-    border: 2px solid #3c86f5;
-    // box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
+    background-color: $todo-card;
+    border-color: #6b6b6b;
   }
 }
 
-.todo-list button {
+.todo-list-delete {
   padding: 0.7rem 1rem;
   border-radius: 3px;
   border: 0;
@@ -123,20 +153,29 @@
   }
 }
 
-.todo-list input[type='checkbox'] {
+// `accent-color` actually reaches the native control. The previous
+// `background-color` / `color` pair on the checkbox rendered nothing at all:
+// without `appearance: none` those properties do not touch the box a browser
+// draws, so the styling only looked applied.
+.todo-list-toggle {
   width: 1.5rem;
   height: 1.5rem;
-  background-color: #184a7b;
-  color: #fff;
+  flex-shrink: 0;
+  accent-color: #2160a0;
 }
 
-.todo-completed {
-  list-style-type: none;
-  background-color: #444;
-  padding: 2rem 1rem;
-  border-radius: 3px;
+.todo-list li[data-completed='true'] {
+  .todo-list-input {
+    // 5.07:1 on this panel. The #999 it replaces measured 3.42:1, which reads
+    // fine to me on this monitor and fails AA for anyone it was written for.
+    color: #bbb;
+    text-decoration: line-through;
+  }
 }
 
-.todo-completed-list.todo-list input[type='text'] {
-  color: #999;
+// One rule for every control on the page, so a new control cannot be added
+// without a focus style. `:focus-visible` keeps the ring off pointer clicks.
+.todo :is(input, button):focus-visible {
+  outline: 3px solid $todo-focus;
+  outline-offset: 2px;
 }
