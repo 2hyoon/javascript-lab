@@ -1,0 +1,147 @@
+$autocomplete-border: #9a9a9a;
+$autocomplete-active: #1a73e8;
+$autocomplete-surface: #fff;
+
+[data-component='autocomplete'] {
+  h1 {
+    margin: 1rem 0 1.5rem;
+    font-size: 1.8rem;
+  }
+
+  h2 {
+    font-size: 1.1rem;
+  }
+
+  .autocomplete-intro,
+  .autocomplete-notes {
+    max-width: 46rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .autocomplete-notes li {
+    margin-bottom: 0.6rem;
+  }
+
+  .autocomplete-label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.9rem;
+    font-weight: bold;
+  }
+
+  // The popup is taken out of flow so that opening it does not shove the
+  // status line and the notes down the page. That makes this the positioning
+  // context, and it is the only reason the wrapper exists.
+  .autocomplete-field {
+    position: relative;
+    max-width: 24rem;
+  }
+
+  // Both colours on purpose: a control given only a background falls back to
+  // the browser's own text colour, which this repo has been bitten by before.
+  .autocomplete-input {
+    width: 100%;
+    padding: 0.55rem 0.7rem;
+    border: 1px solid $autocomplete-border;
+    font: inherit;
+    color: #1a1a1a;
+    background-color: $autocomplete-surface;
+  }
+
+  // No `display` here, which is what lets the plain [hidden] attribute keep
+  // working. todoList.scss needed a rule to win that fight back; this one
+  // never picks it.
+  .autocomplete-listbox {
+    position: absolute;
+    z-index: 1;
+    top: 100%;
+    right: 0;
+    left: 0;
+    max-height: 15rem;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
+    border: 1px solid $autocomplete-border;
+    border-top: 0;
+    list-style: none;
+    background-color: $autocomplete-surface;
+  }
+
+  [role='option'] {
+    padding: 0.45rem 0.7rem;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+
+  // Keyboard highlight and pointer hover are the same visual state on purpose,
+  // because they mean the same thing here. The script marks one option at a
+  // time with aria-selected and points aria-activedescendant at it; focus stays
+  // in the text field throughout, so :focus is no use for styling this.
+  [role='option'][aria-selected='true'],
+  [role='option']:hover {
+    color: #fff;
+    background-color: $autocomplete-active;
+  }
+
+  [role='option'] mark {
+    font-weight: bold;
+    color: inherit;
+    background-color: transparent;
+  }
+
+  // Reserves the line it will need, so the notes below do not jump every time
+  // a search starts and finishes.
+  .autocomplete-status {
+    min-height: 1.4em;
+    margin: 0.5rem 0 1.5rem;
+    font-size: 0.85rem;
+    font-weight: bold;
+    line-height: 1.4;
+  }
+
+  .autocomplete-controls {
+    max-width: 24rem;
+    margin: 0 0 1.5rem;
+    padding: 0.75rem 1rem 1rem;
+    border: 1px solid $autocomplete-border;
+    font-size: 0.85rem;
+
+    label {
+      display: block;
+      margin-top: 0.4rem;
+    }
+  }
+
+  .autocomplete-log {
+    max-width: 46rem;
+    max-height: 11rem;
+    overflow-y: auto;
+    margin: 0 0 2rem;
+    padding: 0;
+    list-style: none;
+    font-size: 0.8rem;
+    line-height: 1.7;
+  }
+
+  // Colour carries emphasis here, not meaning: every line says its outcome in
+  // words as well, so nothing is lost when the colours are not perceived.
+  .autocomplete-log li {
+    font-family: monospace;
+
+    &[data-outcome='sent'],
+    &[data-outcome='cancelled'] {
+      color: #6d6d6d;
+    }
+
+    &[data-outcome='ignored'],
+    &[data-outcome='failed'] {
+      color: #b03a1a;
+    }
+  }
+
+  :is(input, button):focus-visible {
+    outline: 2px solid $autocomplete-active;
+    outline-offset: 2px;
+  }
+}

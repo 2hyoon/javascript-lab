@@ -106,6 +106,50 @@ describe('debounce', () => {
 
     expect(fn).toHaveBeenCalledExactlyOnceWith('third');
   });
+
+  it('cancel() drops the call that was waiting', () => {
+    const fn = vi.fn();
+    const debounced = debounce(fn, WAIT);
+
+    debounced();
+    debounced.cancel();
+    vi.advanceTimersByTime(WAIT);
+
+    expect(fn).not.toHaveBeenCalled();
+  });
+
+  it('cancel() is not one-shot: the next call debounces as usual', () => {
+    const fn = vi.fn();
+    const debounced = debounce(fn, WAIT);
+
+    debounced('dropped');
+    debounced.cancel();
+
+    // This advance is what makes the test worth having. Without it the next
+    // call would overwrite the pending timer on its own, so the assertion
+    // below would hold whether cancel() did anything or not — verified by
+    // emptying cancel()'s body and watching this suite stay green.
+    vi.advanceTimersByTime(WAIT);
+    expect(fn).not.toHaveBeenCalled();
+
+    debounced('kept');
+    vi.advanceTimersByTime(WAIT);
+
+    expect(fn).toHaveBeenCalledExactlyOnceWith('kept');
+  });
+
+  it('cancel() with nothing pending is a no-op', () => {
+    const fn = vi.fn();
+    const debounced = debounce(fn, WAIT);
+
+    expect(() => debounced.cancel()).not.toThrow();
+
+    // Also after a call has already landed, which is the other way to be idle.
+    debounced();
+    vi.advanceTimersByTime(WAIT);
+    expect(() => debounced.cancel()).not.toThrow();
+    expect(fn).toHaveBeenCalledOnce();
+  });
 });
 
 describe('throttleLeading', () => {
@@ -507,16 +551,17 @@ describe('initRateLimit', () => {
     waitInput.dispatchEvent(new Event('input'));
     expect(waitOutput.textContent).toBe('50 ms');
 
-    // The old wrapper is gone, but the timer it had already scheduled is not:
-    // that closure keeps its own id and still calls `mark`. So the first event
-    // lands on the *old* 300ms delay even though the slider now reads 50.
+    // rebuild() cancels the wrapper it is replacing, so the call that was
+    // waiting on the old 300ms delay never lands. Without that cancel the
+    // closure would keep its own timer and mark once more, on a delay the
+    // slider has already moved off.
     vi.advanceTimersByTime(300);
-    expect(count('debounced')).toBe(1);
+    expect(count('debounced')).toBe(0);
 
     // The new wrapper does use the new delay.
     move(1);
     vi.advanceTimersByTime(50);
-    expect(count('debounced')).toBe(2);
+    expect(count('debounced')).toBe(1);
   });
 
   it('resets every counter', () => {
@@ -548,20 +593,55 @@ describe('initRateLimit', () => {
     expect(count('raw')).toBe(1);
   });
 
-  it('cleanup does not reach a call already scheduled', () => {
+  it('cleanup cancels the debounce that was waiting', () => {
     fixture();
     stubCanvas();
     const stop = initRateLimit();
 
-    move(1); // opens a debounce window and books a frame
+    move(1); // opens a debounce window
     stop();
     vi.advanceTimersByTime(300);
 
-    // Known gap, pinned rather than papered over: abort() removes listeners,
-    // but the timer and the frame were queued before it ran and still fire
-    // into a component that is gone. Both counters moved *after* cleanup.
-    // When the cancel() in the file's follow-up list lands, these become 0.
-    expect(count('debounced')).toBe(1);
+    // abort() only removes listeners; this timer was queued before it ran.
+    // Cancelling is what reaches back for it.
+    expect(count('debounced')).toBe(0);
+  });
+
+  it('cleanup cancels the wrapper the slider left behind, not the first one', () => {
+    fixture();
+    stubCanvas();
+    const stop = initRateLimit();
+
+    // Moving the slider replaces `debounced`, so there are now two wrappers in
+    // the test's history and only one of them is live.
+    const waitInput = document.querySelector('.rate-limit-wait');
+    waitInput.value = '50';
+    waitInput.dispatchEvent(new Event('input'));
+
+    move(1); // opens a window on the *new* wrapper
+    stop();
+    vi.advanceTimersByTime(300);
+
+    // Which is why the canceller reads `debounced` at teardown instead of
+    // capturing it when the demo was enhanced: a captured one would cancel the
+    // wrapper nobody is using and let this call through. Verified by making
+    // that exact substitution — the test above stays green, this one does not.
+    expect(count('debounced')).toBe(0);
+  });
+
+  it('cleanup still does not reach a frame already booked', () => {
+    fixture();
+    stubCanvas();
+    const stop = initRateLimit();
+
+    move(1); // books a frame through throttleFrame
+    stop();
+    vi.advanceTimersByTime(300);
+
+    // The remaining half of the same gap, pinned rather than papered over.
+    // cancel() went to debounce only, because that is the wrapper Autocomplete
+    // needs; throttleFrame still fires once into a component that is gone.
+    // This becomes 0 when step 4 of the file's follow-up list finishes.
     expect(count('throttledFrame')).toBe(1);
   });
 });

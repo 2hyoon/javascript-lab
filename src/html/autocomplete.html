@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Autocomplete</title>
+    <link rel="icon" type="image/png" href="/images/favicon.png" />
+    <link rel="stylesheet" href="styles/app.css" />
+  </head>
+  <body data-component="autocomplete">
+    <%= require('./partials/header.html') %>
+    <div class="container">
+      <h1>Autocomplete</h1>
+      <p class="autocomplete-intro">
+        Every keystroke could be a request, and the answers do not have to come
+        back in the order they were asked. Type quickly and the debounce keeps
+        most of them from ever leaving; type slowly and the toggles below decide
+        whether a late answer is allowed to overwrite a newer one.
+      </p>
+
+      <div class="autocomplete">
+        <label class="autocomplete-label" for="autocomplete-input">
+          Search English words
+        </label>
+
+        <!-- The listbox is a sibling of the input, not a child: a combobox owns
+             its popup through aria-controls rather than by containing it, and
+             nesting interactive content inside a text field is not valid HTML
+             anyway. The wrapper exists to position the popup, nothing else. -->
+        <div class="autocomplete-field">
+          <input
+            type="text"
+            id="autocomplete-input"
+            class="autocomplete-input"
+            role="combobox"
+            aria-expanded="false"
+            aria-controls="autocomplete-listbox"
+            aria-autocomplete="list"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Start typing"
+          />
+
+          <!-- Empty and hidden until the script has something to show. The
+               script also owns aria-expanded on the input above; the two have
+               to move together or a screen reader is told the list is open
+               while it is display:none. -->
+          <ul
+            id="autocomplete-listbox"
+            class="autocomplete-listbox"
+            role="listbox"
+            aria-label="Suggestions"
+            hidden
+          ></ul>
+        </div>
+
+        <!-- One live region carrying all four states: searching, a result
+             count, no matches, and the failure. Visible rather than
+             visually-hidden, because the failure message is the only thing
+             that ever explains an empty list to a sighted reader. -->
+        <p class="autocomplete-status" role="status" aria-live="polite"></p>
+
+        <noscript>
+          <p class="autocomplete-noscript">
+            This demo asks a remote API for its suggestions, so the field does
+            nothing while JavaScript is turned off.
+          </p>
+        </noscript>
+
+        <!-- Instrumentation rather than part of the widget, but inside it on
+             purpose: the script scopes every lookup to the .autocomplete it is
+             enhancing, so anything it has to reach lives in that subtree. Both
+             are optional — a widget without them simply has no instruments.
+             Real networks do produce the overtaking these reproduce, but only
+             sometimes and never while you are looking. -->
+        <fieldset class="autocomplete-controls">
+          <legend>Network simulation</legend>
+          <label>
+            <input type="checkbox" class="autocomplete-slow" />
+            Hold each response back by a random 0&ndash;1500&thinsp;ms
+          </label>
+          <label>
+            <input type="checkbox" class="autocomplete-discard" checked />
+            Discard stale responses
+          </label>
+        </fieldset>
+
+        <!-- Newest first, so the interesting line never needs scrolling to.
+             Deliberately not a live region: it grows on every keystroke, which
+             would flood a screen reader rather than inform it. The status line
+             above is the announced one. -->
+        <ul class="autocomplete-log" aria-label="Request log"></ul>
+      </div>
+
+      <h2>What to look for</h2>
+      <ul class="autocomplete-notes">
+        <li>
+          Type a word at speed. The log shows one request, not one per letter
+          &mdash; the debounce waits for you to stop.
+        </li>
+        <li>
+          Now type one letter every half second. Each new request cancels the
+          one before it, and the cancelled ones never reach the list.
+        </li>
+        <li>
+          Turn on <strong>Hold each response back</strong> and type slowly. The
+          answers now arrive out of order, and the list still only ever shows
+          the newest query. Cancelling is half of that; the other half is that a
+          response which had already fully arrived cannot be cancelled at all,
+          so it is checked against the query and dropped on the way in.
+        </li>
+        <li>
+          Turn off <strong>Discard stale responses</strong> and repeat. The list
+          now flickers between answers to words you have already finished
+          typing. That is the race condition, and it is the entire reason for
+          both mechanisms above.
+        </li>
+        <li>
+          Put the pointer away. <kbd>&darr;</kbd> and <kbd>&uarr;</kbd> walk the
+          list, <kbd>Enter</kbd> takes one, <kbd>Esc</kbd> closes the list and
+          then clears the field. Focus never leaves the text box &mdash; the
+          highlight moves through <code>aria-activedescendant</code>, because a
+          list that stole focus would stop you typing.
+        </li>
+      </ul>
+    </div>
+    <script src="scripts/app.js"></script>
+  </body>
+</html>
