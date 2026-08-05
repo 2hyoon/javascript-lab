@@ -109,7 +109,8 @@ const LANES = [
 // "which call's arguments survive" could never be observed from the DOM.
 export function debounce(fn, wait) {
   let timerID = null;
-  return (...args) => {
+
+  const debounced = (...args) => {
     // No guard needed: clearTimeout(null) is a no-op.
     clearTimeout(timerID);
     timerID = setTimeout(() => {
@@ -119,6 +120,18 @@ export function debounce(fn, wait) {
       fn(...args);
     }, wait);
   };
+
+  debounced.cancel = () => {
+    clearTimeout(timerID);
+    // No test can catch this line today: nothing reads `timerID` from the
+    // outside, and clearTimeout on a dead id is a no-op, so leaving the id in
+    // place would behave identically. It is here so the flag keeps telling the
+    // truth — the first thing that reads it as "call pending?" is the thing
+    // this would otherwise break.
+    timerID = null;
+  };
+
+  return debounced;
 }
 
 // Trailing edge: the first event opens a window, and the call lands when the
@@ -183,12 +196,17 @@ export function throttleFrame(fn) {
 }
 
 // Enhances every .rate-limit inside `root`. Returns a function that stops the
-// draw loop and removes the listeners, because an animation frame that keeps
-// requesting itself outlives the DOM it was drawing for.
+// draw loop, cancels the debounce that was waiting, and removes the listeners,
+// because an animation frame that keeps requesting itself outlives the DOM it
+// was drawing for.
 export function initRateLimit(root = document) {
   const controller = new AbortController();
   const { signal } = controller;
   const frames = [];
+  // Read at teardown, not now: `debounced` is rebuilt every time the slider
+  // moves, so the closure has to look the current wrapper up rather than
+  // capture the one that existed when the demo was enhanced.
+  const pending = [];
 
   root.querySelectorAll('.rate-limit').forEach((demo) => {
     const demoEl = demo;
@@ -239,14 +257,19 @@ export function initRateLimit(root = document) {
       countEls[key].textContent = counts[key];
     }
 
-    // Moving the slider builds a fresh set. The old wrappers are dropped, but
-    // anything they had already scheduled is not — the closure holds its own
-    // timer and still fires into `mark`, so a slider move mid-burst produces
-    // one last mark on the old delay. Same missing cancel() as the cleanup
-    // below; fixing one fixes both.
+    // Moving the slider builds a fresh set, and dropping a wrapper is not the
+    // same as stopping it: the closure holds its own timer and would still
+    // fire into `mark` on the delay the slider has already moved off. Cancel
+    // it on the way out, so a slider move mid-burst loses the pending call
+    // rather than landing it late.
+    //
+    // The two throttles keep that old behaviour, because cancel() went to
+    // debounce only — see the note on its definition. throttleTrailing still
+    // produces one last mark on the previous delay.
     function rebuild() {
       const wait = Number(waitInput.value);
       waitOutput.textContent = `${wait} ms`;
+      if (debounced) debounced.cancel();
       debounced = debounce(() => mark('debounced'), wait);
       throttledTrailing = throttleTrailing(
         () => mark('throttledTrailing'),
@@ -379,15 +402,18 @@ export function initRateLimit(root = document) {
     rebuild();
     frame = requestAnimationFrame(draw);
     frames.push(() => cancelAnimationFrame(frame));
+    pending.push(() => debounced.cancel());
   });
 
-  // Aborting the controller removes the listeners, so nothing new is
-  // scheduled after this. What it does not reach is work already queued when
-  // it runs: a debounce timer mid-wait, or a frame throttleFrame has booked.
-  // Both fire once into a component that is gone. That is exactly the gap the
-  // cancel() in step 4 of the notes above closes.
+  // Aborting the controller removes the listeners, so nothing new is scheduled
+  // after this, and cancelling the debounce reaches back for the one call that
+  // was already waiting. What none of it reaches is a frame throttleFrame has
+  // booked: that lane still fires once into a component that is gone, because
+  // cancel() went to debounce only — the wrapper Autocomplete needed. The rest
+  // of step 4 in the notes above is still open, and a test below pins it.
   return () => {
     controller.abort();
     frames.forEach((stop) => stop());
+    pending.forEach((cancel) => cancel());
   };
 }
